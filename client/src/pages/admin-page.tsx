@@ -5,9 +5,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CardManager from "@/components/admin/CardManager";
 import UserManager from "@/components/admin/UserManager";
+import DesignManager from "@/components/admin/DesignManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Database, Users, FileText, LayoutDashboard } from "lucide-react";
+import { Settings, Database, Users, FileText, LayoutDashboard, Palette } from "lucide-react";
 
 export default function AdminPage() {
   const { user, isLoading } = useAuth();
@@ -45,7 +46,7 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent className="p-6">
             <Tabs defaultValue="cards" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-3 mb-8 p-1 bg-gray-50 border rounded-lg">
+              <TabsList className="grid grid-cols-4 mb-8 p-1 bg-gray-50 border rounded-lg">
                 <TabsTrigger value="cards" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <Database className="h-4 w-4 mr-2" />
                   Cards
@@ -57,6 +58,10 @@ export default function AdminPage() {
                 <TabsTrigger value="designs" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <FileText className="h-4 w-4 mr-2" />
                   Designs
+                </TabsTrigger>
+                <TabsTrigger value="design-system" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <Palette className="h-4 w-4 mr-2" />
+                  Design System
                 </TabsTrigger>
               </TabsList>
               
@@ -78,6 +83,10 @@ export default function AdminPage() {
                     The design management interface allowing you to review, approve, and provide feedback on user submissions will be implemented in the next update.
                   </p>
                 </div>
+              </TabsContent>
+              
+              <TabsContent value="design-system" className="mt-0">
+                <DesignManager />
               </TabsContent>
             </Tabs>
           </CardContent>
