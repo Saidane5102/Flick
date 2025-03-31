@@ -1,0 +1,140 @@
+I’m creating a game called "Design Deck Challenge" to help junior graphic designers practice their skills. The core idea is a card-drawing system that generates random, realistic design briefs. Players draw cards, design based on the brief, and share their work for feedback. I need a digital version with a clean, interactive UI, focusing on a card-flipping mechanic where the front shows only the category name, and the back holds the specific prompt plus AI-generated content (I’ll provide the AI content later). Below is the full concept, technical setup, and roadmap I’d like you to follow.
+
+Game Concept
+Objective: Help junior graphic designers practice by generating random design briefs through a card-drawing system, then creating and sharing work for feedback.
+
+The Four Card Types
+
+The game uses four decks, each representing a key part of a design brief:
+
+Client Deck: Who you’re designing for (e.g., "Local coffee shop," "Tech startup," "Luxury fashion brand").
+Need Deck: What the client wants (e.g., "Logo design," "Poster for an event," "Website landing page").
+Challenge Deck: A twist or constraint (e.g., "Limited color palette (2 colors only)," "Typography-focused design").
+Audience Deck: Who the design targets (e.g., "Gen Z trendsetters," "Eco-conscious consumers," "Retirees").
+How It Works
+
+Draw Cards: Players draw one card from each deck (digitally via a randomizer).
+Generate Brief: Combine the cards’ back prompts into a brief (e.g., "Create a poster for a local coffee shop’s sustainability event using only two colors, targeting eco-conscious consumers").
+Design: Players create a design based on the brief.
+Share & Feedback: They upload their work to a gallery for community feedback.
+Technical Requirements
+Core Feature: Card System with Flip Mechanic
+Four Decks: Build four separate decks (Client, Need, Challenge, Audience) as digital card stacks.
+Card Front:
+Each card’s front displays only its category name (e.g., "Client," "Need," "Challenge," "Audience").
+Backoffice Editable: Set up the category name to be configurable from a backoffice interface. For example:
+Field: category (e.g., "Client") should be editable per card.
+Ensure changes sync to the frontend dynamically without hardcoding the values.
+Use bold typography and a simple icon to differentiate categories visually (e.g., a coffee cup for Client, a poster for Need).
+Card Back: When flipped, each card reveals:
+The specific prompt (e.g., "Local coffee shop" for Client, "Poster for an event" for Need).
+A variable field for AI-generated content (e.g., a short description or tip). I’ll populate this later via AI, so please:
+Set up backend variables: promptText (e.g., "Local coffee shop") and backContent (e.g., "AI-generated content coming soon").
+Both promptText and backContent should be placeholders for now, with promptText editable via backoffice.
+Flip Animation: When a player clicks or taps a card, it flips from front (category) to back (prompt + AI content) with a smooth 3D animation (e.g., CSS flip or JS library like GSAP).
+Card Data Structure: Store each card as an object with:
+category (e.g., "Client") – editable via backoffice, shown on front
+promptText (e.g., "Local coffee shop") – editable via backoffice, shown on back
+backContent (e.g., placeholder for AI content) – shown on back
+Backoffice Interface
+Build a simple backoffice for managing card content:
+Card Management: A list of all cards across the four decks (Client, Need, Challenge, Audience).
+Editable Fields: For each card, allow admin to update category (front) and promptText (back). Optional: Add a field for backContent if I decide to manually input AI content later.
+Basic CRUD: Create, read, update, delete functionality for cards.
+Authentication: Basic login (e.g., username/password) for admin access—keep it simple for now.
+Sync: Ensure changes reflect in the game frontend in real-time (e.g., via API or database sync).
+Randomizer Tool
+Build a "Draw Cards" button that randomly selects one card from each deck and displays them on-screen with fronts showing (e.g., "Client," "Need," "Challenge," "Audience").
+After drawing, either:
+Auto-flip all cards to show the back (prompt + AI content), or
+Let the player manually flip each card to reveal the back (your call—let me know what you recommend).
+Add a "Reroll" button to replace one card at a time if the player wants to tweak the brief.
+Display the full brief as a single sentence below the cards using the promptText values (e.g., "Create a [Need prompt] for a [Client prompt] with [Challenge prompt], targeting [Audience prompt]").
+Platform Features
+Gallery:
+A section where players can upload their finished designs (image files, max 5MB).
+Display uploads in a grid with the associated brief visible.
+Feedback System:
+Simple upvote/downvote buttons on each submission.
+A comment box with prompts (e.g., “What works well?” “One tip?”) to guide feedback.
+Optional “Mentor Mode” toggle (for future use—admins can enable it for pro users).
+Progress Tracking:
+Track completed briefs per player (e.g., “5 Briefs Done” badge).
+Display badges on a user profile page (e.g., “Mastered Typography” for 3 typography challenges).
+Additional Features (Nice-to-Haves)
+Difficulty Tiers: Tag cards as Beginner/Intermediate/Advanced for future filtering.
+Time Tracker: Optional timer players can start (e.g., "2-hour challenge") with a completion alert.
+Inspiration Hub: Static page with placeholder links (e.g., "Typography Guide," "Color Theory Basics").
+Design Notes
+UI: Clean, modern, and playful—think bold colors (e.g., teal, orange) and a card-game aesthetic.
+Card Layout: Each card should be ~200x300px on desktop, scaling down responsively for mobile.
+Accessibility: Ensure text is readable (min 16px), buttons are tappable (min 48px), and animations can be disabled for motion-sensitive users.
+Example Card Flow
+Player clicks "Draw Cards."
+Four cards appear with fronts showing:
+"Client" (front) → flips to "Indie musician" + "AI tip: Think vinyl record vibes" (back).
+"Need" (front) → flips to "Social media campaign" + "AI idea: 3-post series" (back).
+"Challenge" (front) → flips to "No stock images" + "AI suggestion: Hand-draw icons" (back).
+"Audience" (front) → flips to "Gen Z trendsetters" + "AI note: Bold and meme-friendly" (back).
+Brief displays (using back prompts): "Create a social media campaign for an indie musician with no stock images, targeting Gen Z trendsetters."
+Player flips cards for details/inspiration, designs, and uploads to the gallery.
+What I’ll Provide Later
+AI-generated content for the backContent of each card (e.g., tips, descriptions). For now, use placeholders.
+Specific card lists for each deck (I’ll start with 10-20 cards per category).
+Notes for Dev
+The front of each card is just the category name (e.g., "Client"), keeping it simple and uniform.
+The back holds the specific prompt (e.g., "Local coffee shop") and AI content—both editable via backoffice.
+The backoffice should be a separate admin panel (e.g., /admin) where I can log in and tweak card data.
+Start with a small set of sample cards (e.g., 5 per deck) that I can edit later—I’ll provide the initial list if needed.
+Development Roadmap
+Here’s a step-by-step plan to build the project, focusing on the basic version (randomizer + card flip + gallery) first, with room for later expansion:
+
+Phase 1: Setup & Core Structure
+Goal: Establish the foundation and card data system.
+Steps:
+Set up the tech stack (e.g., React, Node.js, MongoDB, Strapi).
+Create a basic frontend with a homepage (e.g., “Welcome to Design Deck Challenge”).
+Set up the backend API with a MongoDB database to store card data (category, promptText, backContent).
+Seed the database with 5 sample cards per deck (e.g., "Client": "Local coffee shop," "Need": "Logo design," etc.).
+Deliverable: A working dev environment with sample card data.
+Phase 2: Card System & Randomizer
+Goal: Build the interactive card-drawing mechanic.
+Steps:
+Design card UI (~200x300px) with fronts showing category names and simple icons (e.g., "Client" with a coffee cup).
+Implement the flip animation (e.g., Framer Motion) to reveal backs with promptText and backContent placeholders.
+Build the "Draw Cards" button to randomly pull one card per deck from the database.
+Add the brief generator to display a sentence below the cards using promptText (e.g., "Create a [Need] for a [Client]...").
+Add a "Reroll" button to swap one card at a time.
+Deliverable: A functional card-drawing system with flips and brief generation.
+Phase 3: Gallery & Basic Feedback
+Goal: Enable design uploads and simple feedback.
+Steps:
+Create a gallery page with a grid layout.
+Add an upload form for images (max 5MB), linking each to its generated brief.
+Integrate image storage (e.g., Cloudinary or local temp storage).
+Add upvote/downvote buttons and a comment box with prompts (e.g., “What works well?”).
+Deliverable: A basic version where players can draw cards, see a brief, upload designs, and get feedback.
+Phase 4: Backoffice Setup
+Goal: Allow card management via an admin panel.
+Steps:
+Set up a backoffice (e.g., Strapi or custom React admin) at /admin.
+Add basic authentication (e.g., username/password via Firebase Auth).
+Build a card management UI to list all cards and edit category and promptText.
+Test real-time sync between backoffice changes and frontend display.
+Deliverable: An admin panel to update card data dynamically.
+Phase 5: Polish & Deploy
+Goal: Refine UX and launch the MVP.
+Steps:
+Style the UI with Tailwind CSS (teal/orange palette, playful vibe).
+Ensure responsiveness (mobile-friendly cards/buttons).
+Add accessibility features (readable text, tappable buttons, animation toggle).
+Deploy to Vercel (frontend + API) and test live functionality.
+Deliverable: A polished, deployed basic version.
+Phase 6: Future Enhancements (Post-MVP)
+Goal: Add nice-to-have features based on feedback.
+Steps:
+Implement progress tracking (badges like “5 Briefs Done”).
+Add difficulty tiers (tag cards as Beginner/Advanced).
+Build a time tracker for challenges.
+Create an Inspiration Hub page.
+Deliverable: An expanded version with gamification and resources.
