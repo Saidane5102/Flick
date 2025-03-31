@@ -10,4 +10,99 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+  
+  /* Apple-inspired typography scaling */
+  h1 {
+    @apply text-3xl md:text-4xl font-semibold tracking-tight text-gray-900;
+    letter-spacing: -0.02em;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl font-semibold tracking-tight text-gray-900;
+    letter-spacing: -0.01em;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl font-semibold text-gray-900;
+    letter-spacing: -0.01em;
+  }
+  
+  p {
+    @apply text-gray-700 leading-relaxed;
+  }
+}
+
+@layer components {
+  /* Card styles */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  /* Apple-like minimalist styles */
+  .apple-card {
+    @apply rounded-xl bg-white shadow-sm border border-gray-100;
+    transition: all 0.2s ease;
+  }
+  
+  .apple-card:hover {
+    @apply shadow-md border-gray-200;
+    transform: translateY(-2px);
+  }
+  
+  .apple-input {
+    @apply border-0 shadow-none bg-gray-50 rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary/30 focus:bg-white transition-all;
+  }
+  
+  .apple-button {
+    @apply rounded-full font-medium transition-all duration-200 ease-out active:scale-95;
+  }
+  
+  /* Additional Apple-like UI components */
+  .glass-effect {
+    @apply bg-white/60 backdrop-blur-md;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  
+  .apple-gradient-blue {
+    @apply bg-gradient-to-r from-blue-500 to-indigo-600;
+  }
+  
+  .apple-shadow {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03), 0 8px 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  .focus-ring {
+    @apply outline-none ring-offset-2 ring-2 ring-blue-500/50;
+  }
+  
+  /* Smooth animations */
+  .transition-apple {
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  }
 }

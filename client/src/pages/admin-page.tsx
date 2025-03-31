@@ -4,9 +4,10 @@ import { Redirect } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CardManager from "@/components/admin/CardManager";
+import UserManager from "@/components/admin/UserManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Database, Users, FileText } from "lucide-react";
+import { Settings, Database, Users, FileText, LayoutDashboard } from "lucide-react";
 
 export default function AdminPage() {
   const { user, isLoading } = useAuth();
@@ -26,54 +27,56 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50/80 flex flex-col">
       <Header />
       
-      <main className="container mx-auto px-4 py-8 flex-grow">
+      <main className="container mx-auto px-4 py-10 flex-grow">
         <div className="flex items-center mb-8">
-          <Settings className="h-6 w-6 mr-2 text-primary" />
-          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <LayoutDashboard className="h-6 w-6 mr-3 text-blue-600" />
+          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
         </div>
         
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle>Manage Content</CardTitle>
-            <CardDescription>
-              Add, edit, or remove cards and manage other system resources.
+        <Card className="apple-card shadow-lg border-0">
+          <CardHeader className="pb-3 border-b">
+            <CardTitle className="text-xl">Manage Content</CardTitle>
+            <CardDescription className="text-gray-600">
+              Add, edit, or remove cards, manage users, and control system resources.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <Tabs defaultValue="cards" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="cards" className="flex items-center">
+              <TabsList className="grid grid-cols-3 mb-8 p-1 bg-gray-50 border rounded-lg">
+                <TabsTrigger value="cards" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <Database className="h-4 w-4 mr-2" />
                   Cards
                 </TabsTrigger>
-                <TabsTrigger value="users" className="flex items-center">
+                <TabsTrigger value="users" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <Users className="h-4 w-4 mr-2" />
                   Users
                 </TabsTrigger>
-                <TabsTrigger value="designs" className="flex items-center">
+                <TabsTrigger value="designs" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <FileText className="h-4 w-4 mr-2" />
                   Designs
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="cards">
+              <TabsContent value="cards" className="mt-0">
                 <CardManager />
               </TabsContent>
               
-              <TabsContent value="users">
-                <div className="p-4 text-center border border-dashed rounded-md">
-                  <h3 className="text-xl font-medium mb-2">User Management</h3>
-                  <p className="text-gray-500">User management features will be implemented in a future update.</p>
-                </div>
+              <TabsContent value="users" className="mt-0">
+                <UserManager />
               </TabsContent>
               
-              <TabsContent value="designs">
-                <div className="p-4 text-center border border-dashed rounded-md">
-                  <h3 className="text-xl font-medium mb-2">Design Management</h3>
-                  <p className="text-gray-500">Design management features will be implemented in a future update.</p>
+              <TabsContent value="designs" className="mt-0">
+                <div className="p-8 text-center border border-dashed rounded-lg bg-gray-50/50">
+                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
+                    <FileText className="h-8 w-8" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2 text-gray-800">Design Management</h3>
+                  <p className="text-gray-500 max-w-md mx-auto">
+                    The design management interface allowing you to review, approve, and provide feedback on user submissions will be implemented in the next update.
+                  </p>
                 </div>
               </TabsContent>
             </Tabs>

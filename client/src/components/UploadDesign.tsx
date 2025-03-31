@@ -120,15 +120,25 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Design brief preview */}
+        <div className="mb-4 p-3 bg-gray-50/80 backdrop-blur-sm rounded-xl border border-gray-100">
+          <Label className="text-sm font-medium text-gray-700">Design Brief</Label>
+          <p className="text-sm mt-1 text-gray-600 leading-relaxed">{brief}</p>
+        </div>
+        
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel className="text-gray-700">Project Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter a title for your design" {...field} />
+                <Input 
+                  className="apple-input" 
+                  placeholder="Enter a title for your design" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -140,11 +150,11 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (optional)</FormLabel>
+              <FormLabel className="text-gray-700">Description (optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Add any details about your design approach"
-                  className="resize-none h-20"
+                  placeholder="Add any details about your design approach, techniques used, or challenges you solved"
+                  className="apple-input resize-none h-24 leading-relaxed"
                   {...field}
                 />
               </FormControl>
@@ -158,28 +168,52 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           name="image"
           render={({ field: { onChange, value, ...fieldProps } }) => (
             <FormItem>
-              <FormLabel>Upload Image (max 5MB)</FormLabel>
+              <FormLabel className="text-gray-700">Upload Design (max 5MB)</FormLabel>
               <FormControl>
-                <div className="space-y-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      onChange(e.target.files);
-                      handleImageChange(e.target.files);
-                    }}
-                    {...fieldProps}
-                  />
-                  
-                  {preview && (
-                    <div className="relative mt-2 h-40 w-full overflow-hidden rounded-md">
-                      <img
-                        src={preview}
-                        alt="Preview"
-                        className="object-contain w-full h-full"
-                      />
-                    </div>
-                  )}
+                <div className="space-y-3">
+                  <div className="relative">
+                    {!preview ? (
+                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center hover:border-gray-300 transition-all cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          onChange={(e) => {
+                            onChange(e.target.files);
+                            handleImageChange(e.target.files);
+                          }}
+                          {...fieldProps}
+                        />
+                        <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-500">Drag and drop an image, or click to browse</p>
+                        <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</p>
+                      </div>
+                    ) : (
+                      <div className="relative rounded-lg overflow-hidden border border-gray-200 group">
+                        <img
+                          src={preview}
+                          alt="Preview"
+                          className="w-full h-64 object-contain bg-white"
+                        />
+                        <div 
+                          className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          onClick={() => setPreview(null)}
+                        >
+                          <p className="text-white text-sm cursor-pointer">Click to change image</p>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          onChange={(e) => {
+                            onChange(e.target.files);
+                            handleImageChange(e.target.files);
+                          }}
+                          {...fieldProps}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </FormControl>
               <FormMessage />
@@ -187,16 +221,11 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           )}
         />
         
-        <div className="pt-2">
-          <Label className="font-medium text-gray-600">Design Brief:</Label>
-          <p className="text-sm bg-gray-50 p-2 rounded-md mt-1">{brief}</p>
-        </div>
-        
         <div className="flex justify-end pt-4">
           <Button
             type="submit"
             disabled={uploadMutation.isPending}
-            className="bg-primary hover:bg-primary-dark text-white"
+            className="apple-button bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 shadow-sm hover:shadow-md"
           >
             {uploadMutation.isPending ? (
               <>
