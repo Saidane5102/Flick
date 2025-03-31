@@ -121,9 +121,9 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Design brief preview */}
-        <div className="mb-4 p-3 bg-gray-50/80 backdrop-blur-sm rounded-xl border border-gray-100">
-          <Label className="text-sm font-medium text-gray-700">Design Brief</Label>
+        {/* Design brief preview - Memorisely style */}
+        <div className="mb-4 p-4 border border-gray-100 rounded-md">
+          <Label className="text-sm font-medium text-gray-800">Design Brief</Label>
           <p className="text-sm mt-1 text-gray-600 leading-relaxed">{brief}</p>
         </div>
         
@@ -132,10 +132,10 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700">Project Title</FormLabel>
+              <FormLabel className="text-gray-800 font-medium">Project Title</FormLabel>
               <FormControl>
                 <Input 
-                  className="apple-input" 
+                  className="memo-input" 
                   placeholder="Enter a title for your design" 
                   {...field} 
                 />
@@ -150,11 +150,11 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-700">Description (optional)</FormLabel>
+              <FormLabel className="text-gray-800 font-medium">Description (optional)</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Add any details about your design approach, techniques used, or challenges you solved"
-                  className="apple-input resize-none h-24 leading-relaxed"
+                  className="memo-input resize-none min-h-[100px] leading-relaxed"
                   {...field}
                 />
               </FormControl>
@@ -168,12 +168,12 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           name="image"
           render={({ field: { onChange, value, ...fieldProps } }) => (
             <FormItem>
-              <FormLabel className="text-gray-700">Upload Design (max 5MB)</FormLabel>
+              <FormLabel className="text-gray-800 font-medium">Upload Design (max 5MB)</FormLabel>
               <FormControl>
                 <div className="space-y-3">
                   <div className="relative">
                     {!preview ? (
-                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center hover:border-gray-300 transition-all cursor-pointer">
+                      <div className="border border-dashed border-gray-200 rounded-md p-8 text-center hover:border-primary/30 transition-colors cursor-pointer">
                         <input
                           type="file"
                           accept="image/*"
@@ -185,11 +185,11 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
                           {...fieldProps}
                         />
                         <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">Drag and drop an image, or click to browse</p>
+                        <p className="text-sm text-gray-600">Drag and drop an image, or click to browse</p>
                         <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</p>
                       </div>
                     ) : (
-                      <div className="relative rounded-lg overflow-hidden border border-gray-200 group">
+                      <div className="relative rounded-md overflow-hidden border border-gray-200 group">
                         <img
                           src={preview}
                           alt="Preview"
@@ -225,7 +225,7 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           <Button
             type="submit"
             disabled={uploadMutation.isPending}
-            className="apple-button bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 px-6 shadow-sm hover:shadow-md"
+            className="memo-button-primary"
           >
             {uploadMutation.isPending ? (
               <>

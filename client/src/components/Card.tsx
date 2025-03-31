@@ -84,18 +84,25 @@ export default function Card({
   return (
     <div className="card-container perspective-1000 group">
       <div
-        className="card w-[220px] h-[340px] mx-auto rounded-2xl shadow-lg hover:shadow-xl cursor-pointer relative transform transition-all duration-300 ease-out hover:-translate-y-1"
+        className="card w-[220px] h-[340px] mx-auto rounded-md shadow-sm cursor-pointer relative transform transition-all duration-200 ease-out hover:shadow"
         style={flipCardStyle}
         onClick={onFlip}
       >
-        {/* Card Front */}
+        {/* Card Front - Memorisely Style */}
         <div
-          className={`card-front absolute w-full h-full rounded-2xl ${cardGradient} flex flex-col items-center justify-center p-6 text-white backface-hidden border-2 border-white/20 backdrop-blur-sm`}
+          className={`card-front absolute w-full h-full rounded-md flex flex-col items-center justify-center p-6 text-white backface-hidden border border-white/10`}
+          style={{ background: category === CardCategory.CLIENT 
+            ? 'linear-gradient(135deg, #F37485 0%, #E93C67 100%)' 
+            : category === CardCategory.NEED 
+            ? 'linear-gradient(135deg, #FF8669 0%, #FF5E3A 100%)' 
+            : category === CardCategory.CHALLENGE 
+            ? 'linear-gradient(135deg, #9181F4 0%, #5038ED 100%)' 
+            : 'linear-gradient(135deg, #40C8E0 0%, #2BA4BE 100%)' }}
         >
-          <div className="mb-4 bg-white/20 p-4 rounded-full backdrop-blur-sm">
+          <div className="mb-4 bg-white/10 p-4 rounded-full">
             {cardIcon}
           </div>
-          <h3 className="text-2xl font-bold tracking-tight">{category}</h3>
+          <h3 className="text-xl font-bold">{category}</h3>
           <p className="text-sm mt-2 opacity-90 text-center">
             {category === CardCategory.CLIENT && "Who you're designing for"}
             {category === CardCategory.NEED && "What the client wants"}
@@ -108,21 +115,38 @@ export default function Card({
           </div>
         </div>
 
-        {/* Card Back */}
+        {/* Card Back - Memorisely Style */}
         <div
-          className={`card-back absolute w-full h-full rounded-2xl bg-white flex flex-col p-7 backface-hidden border ${borderColor} shadow-md`}
-          style={{ transform: "rotateY(180deg)" }}
+          className={`card-back absolute w-full h-full rounded-md bg-white flex flex-col p-6 backface-hidden border-t-4 border border-gray-100 shadow-sm`}
+          style={{ 
+            transform: "rotateY(180deg)",
+            borderTopColor: category === CardCategory.CLIENT 
+              ? '#E93C67' 
+              : category === CardCategory.NEED 
+              ? '#FF5E3A' 
+              : category === CardCategory.CHALLENGE 
+              ? '#5038ED' 
+              : '#2BA4BE'
+          }}
         >
-          <div className={`p-3.5 rounded-full w-fit mb-4 ${backIconColor}`}>
+          <div className={`rounded-md w-fit mb-4 p-2 ${
+            category === CardCategory.CLIENT 
+            ? 'bg-pink-50 text-pink-600' 
+            : category === CardCategory.NEED 
+            ? 'bg-orange-50 text-orange-600' 
+            : category === CardCategory.CHALLENGE 
+            ? 'bg-indigo-50 text-indigo-600' 
+            : 'bg-sky-50 text-sky-600'
+          }`}>
             {cardIcon}
           </div>
-          <h4 className="text-xl font-bold text-gray-800 tracking-tight">{promptText}</h4>
-          <div className={`border-t ${borderColor} my-3`}></div>
+          <h4 className="text-lg font-bold text-gray-900">{promptText}</h4>
+          <div className="border-t border-gray-100 my-3"></div>
           <div className="flex-1 overflow-auto custom-scrollbar">
             <p className="text-sm text-gray-600 leading-relaxed">{backContent}</p>
           </div>
           <button
-            className={`reroll-btn mt-4 text-sm font-medium flex items-center justify-center py-2 rounded-lg transition-colors hover:bg-gray-50 ${backIconColor.replace('bg-', 'hover:bg-')}`}
+            className="memo-button-outline mt-4 text-sm flex items-center justify-center"
             onClick={handleReroll}
           >
             <RefreshCw className="h-4 w-4 mr-1.5" />

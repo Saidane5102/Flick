@@ -67,98 +67,98 @@ export default function DesignBrief({
   };
 
   return (
-    <div className="mt-14 w-full max-w-4xl mx-auto opacity-100 transition-opacity duration-500 ease-in-out">
-      <h3 className="text-2xl font-semibold mb-5 text-center">Your Design Brief</h3>
-      <div className="apple-card bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 relative overflow-hidden">
-        {/* Decorative gradient accent */}
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+    <div className="mt-14 w-full max-w-4xl mx-auto opacity-100 transition-opacity duration-300 ease-in-out">
+      <h3 className="text-2xl font-bold mb-6 text-center">Your Design Brief</h3>
+      <div className="memo-card p-6 md:p-8 relative overflow-hidden">
+        {/* Memorisely-style gradient accent */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 to-pink-600"></div>
         
         {/* Brief text content */}
         <div className="relative z-10">
-          <p className="text-xl leading-relaxed tracking-tight text-gray-800">
-            Create a <span className="font-semibold text-orange-500 px-1 py-0.5 rounded bg-orange-50">{needCard.promptText}</span>{" "}
-            for a <span className="font-semibold text-teal-500 px-1 py-0.5 rounded bg-teal-50">{clientCard.promptText}</span>{" "}
-            with <span className="font-semibold text-purple-500 px-1 py-0.5 rounded bg-purple-50">{challengeCard.promptText}</span>,{" "}
-            targeting <span className="font-semibold text-emerald-500 px-1 py-0.5 rounded bg-emerald-50">{audienceCard.promptText}</span>.
+          <p className="text-xl leading-relaxed text-gray-800 mb-6">
+            Create a <span className="font-medium text-[#FF5E3A] px-1 py-0.5 rounded bg-orange-50">{needCard.promptText}</span>{" "}
+            for a <span className="font-medium text-[#E93C67] px-1 py-0.5 rounded bg-pink-50">{clientCard.promptText}</span>{" "}
+            with <span className="font-medium text-[#5038ED] px-1 py-0.5 rounded bg-indigo-50">{challengeCard.promptText}</span>,{" "}
+            targeting <span className="font-medium text-[#2BA4BE] px-1 py-0.5 rounded bg-sky-50">{audienceCard.promptText}</span>.
           </p>
 
-          {/* Card details */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-            <div className="p-3 bg-teal-50 rounded-lg">
-              <div className="font-medium text-teal-700 mb-1">Client</div>
+          {/* Card details - Memorisely style */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="border border-gray-100 rounded-md p-4 hover:border-pink-200 transition-colors">
+              <div className="font-medium text-[#E93C67] mb-2">Client</div>
               <div className="text-gray-700">{clientCard.promptText}</div>
             </div>
-            <div className="p-3 bg-orange-50 rounded-lg">
-              <div className="font-medium text-orange-700 mb-1">Need</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-orange-200 transition-colors">
+              <div className="font-medium text-[#FF5E3A] mb-2">Need</div>
               <div className="text-gray-700">{needCard.promptText}</div>
             </div>
-            <div className="p-3 bg-purple-50 rounded-lg">
-              <div className="font-medium text-purple-700 mb-1">Challenge</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-indigo-200 transition-colors">
+              <div className="font-medium text-[#5038ED] mb-2">Challenge</div>
               <div className="text-gray-700">{challengeCard.promptText}</div>
             </div>
-            <div className="p-3 bg-emerald-50 rounded-lg">
-              <div className="font-medium text-emerald-700 mb-1">Audience</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-sky-200 transition-colors">
+              <div className="font-medium text-[#2BA4BE] mb-2">Audience</div>
               <div className="text-gray-700">{audienceCard.promptText}</div>
             </div>
           </div>
 
-          {/* Action buttons */}
+          {/* Action buttons - Memorisely style */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={handleStartDesign}
-              className="apple-button bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-8 shadow-sm hover:shadow-md flex items-center justify-center"
+              className="memo-button-primary flex items-center justify-center"
             >
-              <Upload className="h-4.5 w-4.5 mr-2" />
+              <Upload className="h-4 w-4 mr-2" />
               Start Design
             </Button>
             
             <Button
               variant="outline"
               onClick={saveBrief}
-              className="apple-button border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 text-gray-800 font-medium py-3 px-8 rounded-full flex items-center justify-center"
+              className="memo-button-outline flex items-center justify-center"
             >
-              <Save className="h-4.5 w-4.5 mr-2" />
+              <Save className="h-4 w-4 mr-2" />
               Save Brief
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Optional timer */}
+      {/* Optional timer - Memorisely style */}
       <div className="mt-6 flex justify-center">
         <Dialog open={timerDialogOpen} onOpenChange={setTimerDialogOpen}>
           <DialogTrigger asChild>
             <Button
               variant="ghost"
-              className="text-sm flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+              className="text-sm flex items-center text-gray-600 hover:text-primary transition-colors"
             >
               <Clock className="h-4 w-4 mr-1.5" />
               Set Timer for Challenge
             </Button>
           </DialogTrigger>
-          <DialogContent className="apple-card border-0">
+          <DialogContent className="memo-card">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold">Set a Timer for Your Challenge</DialogTitle>
+              <DialogTitle className="text-xl font-bold">Set a Timer</DialogTitle>
               <DialogDescription className="text-gray-600">
                 Choose how long you want to work on this design challenge.
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
-              <Button onClick={() => setTimerDialogOpen(false)} className="apple-button bg-gray-100 hover:bg-gray-200 text-gray-800 border-0">30 Minutes</Button>
-              <Button onClick={() => setTimerDialogOpen(false)} className="apple-button bg-gray-100 hover:bg-gray-200 text-gray-800 border-0">1 Hour</Button>
-              <Button onClick={() => setTimerDialogOpen(false)} className="apple-button bg-gray-100 hover:bg-gray-200 text-gray-800 border-0">2 Hours</Button>
-              <Button onClick={() => setTimerDialogOpen(false)} className="apple-button bg-gray-100 hover:bg-gray-200 text-gray-800 border-0">Custom</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">30 Minutes</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">1 Hour</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">2 Hours</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">Custom</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
       
-      {/* Upload Design Dialog */}
+      {/* Upload Design Dialog - Memorisely style */}
       <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] memo-card">
           <DialogHeader>
-            <DialogTitle>Upload Your Design</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl font-bold">Upload Your Design</DialogTitle>
+            <DialogDescription className="text-gray-600">
               Share your work with the community for feedback
             </DialogDescription>
           </DialogHeader>
