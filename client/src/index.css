@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,29 +10,42 @@
   }
 
   body {
-    @apply font-sans antialiased bg-white text-gray-900;
+    @apply bg-white text-gray-900;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Memorisely-inspired typography */
+  /* Memorisely typography */
   h1 {
-    @apply text-3xl md:text-4xl font-bold tracking-tight text-gray-900;
-    letter-spacing: -0.01em;
+    @apply text-3xl md:text-4xl font-bold text-gray-900;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
   
   h2 {
-    @apply text-2xl md:text-3xl font-bold tracking-tight text-gray-900;
+    @apply text-2xl md:text-3xl font-bold text-gray-900;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
   }
   
   h3 {
-    @apply text-xl md:text-2xl font-bold text-gray-900;
+    @apply text-xl font-bold text-gray-900;
+    letter-spacing: -0.01em;
   }
   
   p {
     @apply text-gray-600 leading-relaxed;
+    font-size: 16px;
   }
 
   a {
     @apply text-primary hover:text-primary/80 transition-colors;
+    font-weight: 500;
+  }
+  
+  button, input, select, textarea {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
@@ -65,34 +80,122 @@
     background: #9ca3af;
   }
   
-  /* Memorisely-inspired styles */
+  /* Memorisely styles */
   .memo-card {
     @apply rounded-md bg-white shadow-sm border border-gray-100;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
   }
   
   .memo-card:hover {
-    @apply shadow-md;
+    @apply shadow border-gray-200;
   }
   
   .memo-input {
-    @apply border border-gray-200 bg-white rounded-md px-4 py-2.5 focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all;
+    @apply border border-gray-200 bg-white rounded-md px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary/30 focus:border-primary transition-all;
+    line-height: 1.5;
   }
   
   .memo-button {
-    @apply rounded-md font-medium transition-colors duration-200 ease-out;
+    @apply rounded-md font-medium transition-colors duration-150 ease-out text-sm;
   }
   
   .memo-button-primary {
-    @apply bg-primary text-white hover:bg-primary/90 rounded-md px-4 py-2.5 font-medium transition-colors;
+    @apply bg-primary text-white hover:bg-primary/90 rounded-md px-4 py-2.5 font-medium transition-colors text-sm;
   }
   
   .memo-button-secondary {
-    @apply bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-md px-4 py-2.5 font-medium transition-colors;
+    @apply bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-md px-4 py-2.5 font-medium transition-colors text-sm;
   }
   
   .memo-button-outline {
-    @apply border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 rounded-md px-4 py-2.5 font-medium transition-colors;
+    @apply border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 rounded-md px-4 py-2.5 font-medium transition-colors text-sm;
+  }
+  
+  /* Memorisely design tokens */
+  .memo-title-xl {
+    @apply text-3xl md:text-4xl font-bold text-gray-900;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  
+  .memo-title-lg {
+    @apply text-2xl md:text-3xl font-bold text-gray-900;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  
+  .memo-title-md {
+    @apply text-xl font-bold text-gray-900;
+    letter-spacing: -0.01em;
+  }
+  
+  .memo-title-sm {
+    @apply text-lg font-bold text-gray-900;
+  }
+  
+  .memo-text-lg {
+    @apply text-lg text-gray-600;
+    line-height: 1.6;
+  }
+  
+  .memo-text-base {
+    @apply text-base text-gray-600;
+    line-height: 1.6;
+  }
+  
+  .memo-text-sm {
+    @apply text-sm text-gray-600;
+    line-height: 1.5;
+  }
+  
+  /* Memorisely color system */
+  .memo-pink {
+    color: #E93C67;
+  }
+  
+  .memo-orange {
+    color: #FF5E3A;
+  }
+  
+  .memo-purple {
+    color: #5038ED;
+  }
+  
+  .memo-blue {
+    color: #2BA4BE;
+  }
+  
+  .memo-bg-pink {
+    background-color: #E93C67;
+  }
+  
+  .memo-bg-orange {
+    background-color: #FF5E3A;
+  }
+  
+  .memo-bg-purple {
+    background-color: #5038ED;
+  }
+  
+  .memo-bg-blue {
+    background-color: #2BA4BE;
+  }
+  
+  /* Memorisely gradients */
+  .memo-gradient-pink {
+    background: linear-gradient(135deg, #F37485 0%, #E93C67 100%);
+  }
+  
+  .memo-gradient-orange {
+    background: linear-gradient(135deg, #FF8669 0%, #FF5E3A 100%);
+  }
+  
+  .memo-gradient-purple {
+    background: linear-gradient(135deg, #9181F4 0%, #5038ED 100%);
+  }
+  
+  .memo-gradient-blue {
+    background: linear-gradient(135deg, #40C8E0 0%, #2BA4BE 100%);
   }
   
   /* Shadow styles */
@@ -101,16 +204,16 @@
   }
   
   .memo-shadow {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
   }
   
   /* Focus styles */
   .memo-focus-ring {
-    @apply outline-none ring-2 ring-primary/30 ring-offset-2;
+    @apply outline-none ring-2 ring-primary/30 ring-offset-1;
   }
   
-  /* Nice pink gradient like Memorisely */
-  .memo-gradient {
-    @apply bg-gradient-to-r from-pink-500 to-pink-600;
+  /* Transitions */
+  .memo-transition {
+    transition: all 0.15s ease;
   }
 }

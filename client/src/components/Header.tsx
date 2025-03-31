@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, Menu, X, Info, LogOut, Settings } from "lucide-react";
+import { Sparkles, Menu, X, Info, LogOut, Settings, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +31,7 @@ export default function Header() {
           {/* Logo - Memorisely Style */}
           <div className="flex items-center">
             <div className="h-8 w-8 bg-primary flex items-center justify-center rounded-md">
-              <Lightbulb className="h-5 w-5 text-white" />
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
             <h1 className="ml-2 text-lg md:text-xl font-bold">
               Design Deck Challenge
@@ -64,9 +64,9 @@ export default function Header() {
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 hover:bg-gray-100">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    {user.username.charAt(0).toUpperCase()}
+                <Button variant="ghost" className="relative h-8 w-8 rounded-md p-0 hover:bg-primary/5 transition-colors">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <User className="h-4 w-4" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
