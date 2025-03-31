@@ -24,6 +24,9 @@ export default function AdminSetupButton() {
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="p-0 border-none bg-transparent shadow-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Admin Promotion Tool</DialogTitle>
+          </DialogHeader>
           <AdminPromotionTool />
         </DialogContent>
       </Dialog>

@@ -117,7 +117,7 @@ export default function CardManager() {
   };
 
   // Filter and search cards
-  const filteredCards = cards
+  const filteredCards = Array.isArray(cards) 
     ? cards.filter((card) => {
         // Category filter
         if (categoryFilter !== "all" && card.category !== categoryFilter) {
@@ -128,7 +128,7 @@ export default function CardManager() {
         if (
           searchTerm &&
           !card.promptText.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !card.backContent.toLowerCase().includes(searchTerm.toLowerCase())
+          !card.backContent?.toLowerCase().includes(searchTerm.toLowerCase())
         ) {
           return false;
         }

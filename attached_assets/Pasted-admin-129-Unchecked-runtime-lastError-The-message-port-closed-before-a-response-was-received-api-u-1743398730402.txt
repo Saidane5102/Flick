@@ -1,0 +1,114 @@
+admin:129 Unchecked runtime.lastError: The message port closed before a response was received.
+api/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+api/login:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+chunk-KPPK3WS5.js?v=7897204f:322 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ chunk-KPPK3WS5.js?v=7897204f:322
+api/temp-admin/hello:1 
+            
+            
+           Failed to load resource: the server responded with a status of 404 (Not Found)
+AdminPromotionTool.tsx:45 Error promoting user: Error: Failed to promote user
+    at AdminPromotionTool.tsx:35:28
+    at async handlePromote (AdminPromotionTool.tsx:32:22)
+handlePromote @ AdminPromotionTool.tsx:45
+api/login:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+chunk-RPCDYKBN.js?v=7897204f:521 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>.
+    at a
+    at a
+    at https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7897204f:337:18
+    at nav
+    at div
+    at header
+    at Header (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/components/Header.tsx:32:47)
+    at div
+    at HomePage (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/pages/home-page.tsx:28:43)
+    at Route (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7897204f:323:16)
+    at ProtectedRoute (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/lib/protected-route.tsx:22:3)
+    at Switch (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7897204f:379:17)
+    at Router
+    at AuthProvider (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7897204f:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=7897204f:521
+chunk-KPPK3WS5.js?v=7897204f:322 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ chunk-KPPK3WS5.js?v=7897204f:322
+CardManager.tsx:121 Uncaught TypeError: cards.filter is not a function
+    at CardManager (CardManager.tsx:121:13)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=7897204f:11548:26)
+    at mountIndeterminateComponent (chunk-RPCDYKBN.js?v=7897204f:14926:21)
+    at beginWork (chunk-RPCDYKBN.js?v=7897204f:15914:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=7897204f:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=7897204f:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=7897204f:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=7897204f:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=7897204f:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=7897204f:19137:13)
+CardManager.tsx:121 Uncaught TypeError: cards.filter is not a function
+    at CardManager (CardManager.tsx:121:13)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=7897204f:11548:26)
+    at mountIndeterminateComponent (chunk-RPCDYKBN.js?v=7897204f:14926:21)
+    at beginWork (chunk-RPCDYKBN.js?v=7897204f:15914:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=7897204f:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=7897204f:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=7897204f:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=7897204f:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=7897204f:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=7897204f:19137:13)
+chunk-RPCDYKBN.js?v=7897204f:14032 The above error occurred in the <CardManager> component:
+
+    at CardManager (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/components/admin/CardManager.tsx:61:21)
+    at div
+    at https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=7897204f:41:13
+    at Presence (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-4K3L2YAF.js?v=7897204f:24:11)
+    at https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tabs.js?v=7897204f:173:13
+    at _c5 (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/components/ui/tabs.tsx:72:12)
+    at div
+    at https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=7897204f:41:13
+    at Provider (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-GE6KQUNF.js?v=7897204f:38:15)
+    at https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tabs.js?v=7897204f:51:7
+    at div
+    at _c9 (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/components/ui/card.tsx:20:11)
+    at main
+    at div
+    at AdminPage (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/pages/admin-page.tsx:31:31)
+    at Route (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7897204f:323:16)
+    at AdminRoute (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/lib/protected-route.tsx:68:3)
+    at Switch (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7897204f:379:17)
+    at Router
+    at AuthProvider (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://a06ac621-72bb-4760-9fe7-a5db432de002-00-ei1agxwph5i7.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7897204f:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=7897204f:14032
+chunk-RPCDYKBN.js?v=7897204f:9129 Uncaught TypeError: cards.filter is not a function
+    at CardManager (CardManager.tsx:121:13)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=7897204f:11548:26)
+    at mountIndeterminateComponent (chunk-RPCDYKBN.js?v=7897204f:14926:21)
+    at beginWork (chunk-RPCDYKBN.js?v=7897204f:15914:22)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=7897204f:19753:22)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=7897204f:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=7897204f:19137:13)
+    at renderRootSync (chunk-RPCDYKBN.js?v=7897204f:19116:15)
+    at recoverFromConcurrentError (chunk-RPCDYKBN.js?v=7897204f:18736:28)
+    at performSyncWorkOnRoot (chunk-RPCDYKBN.js?v=7897204f:18879:28)
