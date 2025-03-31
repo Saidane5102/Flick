@@ -33,38 +33,38 @@ export default function Card({
   useEffect(() => {
     switch (category) {
       case CardCategory.CLIENT:
-        setCardIcon(<Briefcase className="h-8 w-8 stroke-[1.5]" />);
-        setCardColor("memo-pink");
-        setCardGradient("memo-gradient-pink");
-        setBackIconColor("text-pink-600 bg-pink-50");
-        setBorderColor("border-pink-200");
+        setCardIcon(<Briefcase className="h-7 w-7 stroke-[1.5]" />);
+        setCardColor("memo-primary");
+        setCardGradient("memo-gradient-dark");
+        setBackIconColor("text-gray-800 bg-gray-100");
+        setBorderColor("border-gray-200");
         break;
       case CardCategory.NEED:
-        setCardIcon(<Target className="h-8 w-8 stroke-[1.5]" />);
-        setCardColor("memo-orange");
-        setCardGradient("memo-gradient-orange");
-        setBackIconColor("text-orange-600 bg-orange-50");
-        setBorderColor("border-orange-200");
+        setCardIcon(<Target className="h-7 w-7 stroke-[1.5]" />);
+        setCardColor("memo-primary");
+        setCardGradient("memo-gradient-dark");
+        setBackIconColor("text-gray-800 bg-gray-100");
+        setBorderColor("border-gray-200");
         break;
       case CardCategory.CHALLENGE:
-        setCardIcon(<Zap className="h-8 w-8 stroke-[1.5]" />);
-        setCardColor("memo-purple");
-        setCardGradient("memo-gradient-purple");
-        setBackIconColor("text-indigo-600 bg-indigo-50");
-        setBorderColor("border-indigo-200");
+        setCardIcon(<Zap className="h-7 w-7 stroke-[1.5]" />);
+        setCardColor("memo-primary");
+        setCardGradient("memo-gradient-dark");
+        setBackIconColor("text-gray-800 bg-gray-100");
+        setBorderColor("border-gray-200");
         break;
       case CardCategory.AUDIENCE:
-        setCardIcon(<Globe className="h-8 w-8 stroke-[1.5]" />);
-        setCardColor("memo-blue");
-        setCardGradient("memo-gradient-blue");
-        setBackIconColor("text-sky-600 bg-sky-50");
-        setBorderColor("border-sky-200");
+        setCardIcon(<Globe className="h-7 w-7 stroke-[1.5]" />);
+        setCardColor("memo-primary");
+        setCardGradient("memo-gradient-dark");
+        setBackIconColor("text-gray-800 bg-gray-100");
+        setBorderColor("border-gray-200");
         break;
       default:
-        setCardIcon(<Briefcase className="h-8 w-8 stroke-[1.5]" />);
-        setCardColor("text-gray-600");
-        setCardGradient("bg-gradient-to-br from-gray-400 to-gray-600");
-        setBackIconColor("text-gray-600 bg-gray-50");
+        setCardIcon(<Briefcase className="h-7 w-7 stroke-[1.5]" />);
+        setCardColor("memo-primary");
+        setCardGradient("memo-gradient-dark");
+        setBackIconColor("text-gray-800 bg-gray-100");
         setBorderColor("border-gray-200");
     }
   }, [category]);
@@ -90,14 +90,8 @@ export default function Card({
       >
         {/* Card Front - Memorisely Style */}
         <div
-          className={`card-front absolute w-full h-full rounded-md flex flex-col items-center justify-center p-6 text-white backface-hidden border border-white/10`}
-          style={{ background: category === CardCategory.CLIENT 
-            ? 'linear-gradient(135deg, #F37485 0%, #E93C67 100%)' 
-            : category === CardCategory.NEED 
-            ? 'linear-gradient(135deg, #FF8669 0%, #FF5E3A 100%)' 
-            : category === CardCategory.CHALLENGE 
-            ? 'linear-gradient(135deg, #9181F4 0%, #5038ED 100%)' 
-            : 'linear-gradient(135deg, #40C8E0 0%, #2BA4BE 100%)' }}
+          className={`card-front absolute w-full h-full rounded-md flex flex-col items-center justify-center p-6 text-white backface-hidden border border-gray-800/10`}
+          style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #000000 100%)' }}
         >
           <div className="flex flex-col items-center justify-center h-full">
             <div className="mb-5 bg-white/10 p-4 rounded-md">
@@ -130,37 +124,15 @@ export default function Card({
           className={`card-back absolute w-full h-full rounded-md bg-white flex flex-col p-6 backface-hidden border-t-4 border border-gray-100 shadow-sm`}
           style={{ 
             transform: "rotateY(180deg)",
-            borderTopColor: category === CardCategory.CLIENT 
-              ? '#E93C67' 
-              : category === CardCategory.NEED 
-              ? '#FF5E3A' 
-              : category === CardCategory.CHALLENGE 
-              ? '#5038ED' 
-              : '#2BA4BE'
+            borderTopColor: '#1A1A1A'
           }}
         >
           <div className="flex items-center mb-4">
-            <div className={`rounded-md w-fit p-2 mr-3 ${
-              category === CardCategory.CLIENT 
-              ? 'bg-pink-50 text-pink-600' 
-              : category === CardCategory.NEED 
-              ? 'bg-orange-50 text-orange-600' 
-              : category === CardCategory.CHALLENGE 
-              ? 'bg-indigo-50 text-indigo-600' 
-              : 'bg-sky-50 text-sky-600'
-            }`}>
+            <div className="rounded-md w-fit p-2 mr-3 bg-gray-100 text-gray-800">
               {cardIcon}
             </div>
             <div>
-              <span className={`text-xs uppercase font-medium tracking-wider ${
-                category === CardCategory.CLIENT 
-                ? 'text-pink-600' 
-                : category === CardCategory.NEED 
-                ? 'text-orange-600' 
-                : category === CardCategory.CHALLENGE 
-                ? 'text-indigo-600' 
-                : 'text-sky-600'
-              }`}>
+              <span className="text-xs uppercase font-medium tracking-wider text-gray-800">
                 {category}
               </span>
             </div>
@@ -172,7 +144,7 @@ export default function Card({
             <p className="text-sm text-gray-600 leading-relaxed">{backContent}</p>
           </div>
           <button
-            className="memo-button-outline text-sm flex items-center justify-center"
+            className="bg-black text-white text-sm flex items-center justify-center py-2 px-4 rounded-md hover:bg-gray-800 transition-colors"
             onClick={handleReroll}
           >
             <RefreshCw className="h-4 w-4 mr-1.5" strokeWidth={1.5} />

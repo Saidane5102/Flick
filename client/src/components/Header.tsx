@@ -30,7 +30,7 @@ export default function Header() {
         <div className="flex items-center space-x-3">
           {/* Logo - Memorisely Style */}
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-primary flex items-center justify-center rounded-md">
+            <div className="h-8 w-8 bg-black flex items-center justify-center rounded-md">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <h1 className="ml-2 text-lg md:text-xl font-bold">
@@ -42,30 +42,30 @@ export default function Header() {
         {/* Desktop navigation - Memorisely Style */}
         <nav className="hidden md:flex items-center space-x-8">
           <Link href="/">
-            <a className={`text-gray-800 hover:text-primary transition-colors text-sm ${location === "/" ? "text-primary font-medium" : ""}`}>
+            <a className={`text-gray-800 hover:text-black transition-colors text-sm ${location === "/" ? "text-black font-medium" : ""}`}>
               Home
             </a>
           </Link>
           <Link href="/#gallery">
-            <a className="text-gray-800 hover:text-primary transition-colors text-sm">
+            <a className="text-gray-800 hover:text-black transition-colors text-sm">
               Gallery
             </a>
           </Link>
           <Link href="/#progress">
-            <a className="text-gray-800 hover:text-primary transition-colors text-sm">
+            <a className="text-gray-800 hover:text-black transition-colors text-sm">
               Progress
             </a>
           </Link>
           
           <Button variant="ghost" className="text-sm p-0 hover:bg-transparent">
-            <Info className="h-5 w-5 text-gray-800 hover:text-primary cursor-pointer" />
+            <Info className="h-5 w-5 text-gray-800 hover:text-black cursor-pointer" />
           </Button>
 
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-md p-0 hover:bg-primary/5 transition-colors">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-md p-0 hover:bg-gray-100 transition-colors">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-100 text-black">
                     <User className="h-4 w-4" />
                   </div>
                 </Button>
@@ -113,21 +113,21 @@ export default function Header() {
         <div className="md:hidden border-t border-gray-100">
           <div className="px-4 py-4 space-y-4">
             <Link href="/">
-              <a className="block text-gray-800 hover:text-primary text-sm" onClick={() => setMobileMenuOpen(false)}>
+              <a className="block text-gray-800 hover:text-black text-sm" onClick={() => setMobileMenuOpen(false)}>
                 Home
               </a>
             </Link>
             <Link href="/#gallery">
-              <a className="block text-gray-800 hover:text-primary text-sm" onClick={() => setMobileMenuOpen(false)}>
+              <a className="block text-gray-800 hover:text-black text-sm" onClick={() => setMobileMenuOpen(false)}>
                 Gallery
               </a>
             </Link>
             <Link href="/#progress">
-              <a className="block text-gray-800 hover:text-primary text-sm" onClick={() => setMobileMenuOpen(false)}>
+              <a className="block text-gray-800 hover:text-black text-sm" onClick={() => setMobileMenuOpen(false)}>
                 Progress
               </a>
             </Link>
-            <button className="flex items-center text-gray-800 hover:text-primary text-sm">
+            <button className="flex items-center text-gray-800 hover:text-black text-sm">
               <Info className="h-4 w-4 mr-2" />
               Help
             </button>
@@ -135,7 +135,7 @@ export default function Header() {
               <>
                 {user.isAdmin && (
                   <Link href="/admin">
-                    <a className="block text-gray-800 hover:text-primary text-sm" onClick={() => setMobileMenuOpen(false)}>
+                    <a className="block text-gray-800 hover:text-black text-sm" onClick={() => setMobileMenuOpen(false)}>
                       <div className="flex items-center">
                         <Settings className="h-4 w-4 mr-2" />
                         Admin Panel
@@ -144,7 +144,7 @@ export default function Header() {
                   </Link>
                 )}
                 <button 
-                  className="flex items-center text-gray-800 hover:text-primary text-sm"
+                  className="flex items-center text-gray-800 hover:text-black text-sm"
                   onClick={handleLogout}
                 >
                   <LogOut className="h-4 w-4 mr-2" />

@@ -173,7 +173,7 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
                 <div className="space-y-3">
                   <div className="relative">
                     {!preview ? (
-                      <div className="border border-dashed border-gray-200 rounded-md p-8 text-center hover:border-primary/30 transition-colors cursor-pointer">
+                      <div className="border border-dashed border-gray-200 rounded-md p-8 text-center hover:border-gray-400 transition-colors cursor-pointer">
                         <input
                           type="file"
                           accept="image/*"
@@ -225,7 +225,7 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           <Button
             type="submit"
             disabled={uploadMutation.isPending}
-            className="memo-button-primary"
+            className="bg-black hover:bg-gray-800 text-white transition-colors"
           >
             {uploadMutation.isPending ? (
               <>

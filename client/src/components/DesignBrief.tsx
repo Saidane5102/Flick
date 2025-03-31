@@ -70,34 +70,34 @@ export default function DesignBrief({
     <div className="mt-14 w-full max-w-4xl mx-auto opacity-100 transition-opacity duration-300 ease-in-out">
       <h3 className="text-2xl font-bold mb-6 text-center">Your Design Brief</h3>
       <div className="memo-card p-6 md:p-8 relative overflow-hidden">
-        {/* Memorisely-style gradient accent */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+        {/* Memorisely-style black accent */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-black"></div>
         
         {/* Brief text content */}
         <div className="relative z-10">
           <p className="text-xl leading-relaxed text-gray-800 mb-6">
-            Create a <span className="font-medium text-[#FF5E3A] px-1 py-0.5 rounded bg-orange-50">{needCard.promptText}</span>{" "}
-            for a <span className="font-medium text-[#E93C67] px-1 py-0.5 rounded bg-pink-50">{clientCard.promptText}</span>{" "}
-            with <span className="font-medium text-[#5038ED] px-1 py-0.5 rounded bg-indigo-50">{challengeCard.promptText}</span>,{" "}
-            targeting <span className="font-medium text-[#2BA4BE] px-1 py-0.5 rounded bg-sky-50">{audienceCard.promptText}</span>.
+            Create a <span className="font-medium text-black px-1 py-0.5 rounded bg-gray-100">{needCard.promptText}</span>{" "}
+            for a <span className="font-medium text-black px-1 py-0.5 rounded bg-gray-100">{clientCard.promptText}</span>{" "}
+            with <span className="font-medium text-black px-1 py-0.5 rounded bg-gray-100">{challengeCard.promptText}</span>,{" "}
+            targeting <span className="font-medium text-black px-1 py-0.5 rounded bg-gray-100">{audienceCard.promptText}</span>.
           </p>
 
           {/* Card details - Memorisely style */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="border border-gray-100 rounded-md p-4 hover:border-pink-200 transition-colors">
-              <div className="font-medium text-[#E93C67] mb-2">Client</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-gray-300 transition-colors">
+              <div className="font-medium text-black mb-2">Client</div>
               <div className="text-gray-700">{clientCard.promptText}</div>
             </div>
-            <div className="border border-gray-100 rounded-md p-4 hover:border-orange-200 transition-colors">
-              <div className="font-medium text-[#FF5E3A] mb-2">Need</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-gray-300 transition-colors">
+              <div className="font-medium text-black mb-2">Need</div>
               <div className="text-gray-700">{needCard.promptText}</div>
             </div>
-            <div className="border border-gray-100 rounded-md p-4 hover:border-indigo-200 transition-colors">
-              <div className="font-medium text-[#5038ED] mb-2">Challenge</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-gray-300 transition-colors">
+              <div className="font-medium text-black mb-2">Challenge</div>
               <div className="text-gray-700">{challengeCard.promptText}</div>
             </div>
-            <div className="border border-gray-100 rounded-md p-4 hover:border-sky-200 transition-colors">
-              <div className="font-medium text-[#2BA4BE] mb-2">Audience</div>
+            <div className="border border-gray-100 rounded-md p-4 hover:border-gray-300 transition-colors">
+              <div className="font-medium text-black mb-2">Audience</div>
               <div className="text-gray-700">{audienceCard.promptText}</div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function DesignBrief({
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               onClick={handleStartDesign}
-              className="memo-button-primary flex items-center justify-center"
+              className="bg-black hover:bg-gray-800 text-white transition-colors flex items-center justify-center"
             >
               <Upload className="h-4 w-4 mr-2" />
               Start Design
@@ -115,7 +115,7 @@ export default function DesignBrief({
             <Button
               variant="outline"
               onClick={saveBrief}
-              className="memo-button-outline flex items-center justify-center"
+              className="border-gray-200 hover:bg-gray-50 text-gray-800 transition-colors flex items-center justify-center"
             >
               <Save className="h-4 w-4 mr-2" />
               Save Brief
@@ -130,7 +130,7 @@ export default function DesignBrief({
           <DialogTrigger asChild>
             <Button
               variant="ghost"
-              className="text-sm flex items-center text-gray-600 hover:text-primary transition-colors"
+              className="text-sm flex items-center text-gray-600 hover:text-black transition-colors"
             >
               <Clock className="h-4 w-4 mr-1.5" />
               Set Timer for Challenge
@@ -144,10 +144,10 @@ export default function DesignBrief({
               </DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
-              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">30 Minutes</Button>
-              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">1 Hour</Button>
-              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">2 Hours</Button>
-              <Button onClick={() => setTimerDialogOpen(false)} className="memo-button-secondary">Custom</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="border-gray-200 hover:bg-gray-50 text-gray-800">30 Minutes</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="border-gray-200 hover:bg-gray-50 text-gray-800">1 Hour</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="border-gray-200 hover:bg-gray-50 text-gray-800">2 Hours</Button>
+              <Button onClick={() => setTimerDialogOpen(false)} className="bg-black hover:bg-gray-800 text-white">Custom</Button>
             </div>
           </DialogContent>
         </Dialog>

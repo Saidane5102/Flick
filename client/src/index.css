@@ -148,54 +148,50 @@
     line-height: 1.5;
   }
   
-  /* Memorisely color system */
-  .memo-pink {
-    color: #E93C67;
+  /* Memorisely color system - based on actual website */
+  .memo-primary {
+    color: #1A1A1A;
   }
   
-  .memo-orange {
-    color: #FF5E3A;
+  .memo-secondary {
+    color: #333333;
   }
   
-  .memo-purple {
-    color: #5038ED;
+  .memo-accent {
+    color: #000000;
   }
   
-  .memo-blue {
-    color: #2BA4BE;
+  .memo-muted {
+    color: #717171;
   }
   
-  .memo-bg-pink {
-    background-color: #E93C67;
+  .memo-bg-primary {
+    background-color: #1A1A1A;
   }
   
-  .memo-bg-orange {
-    background-color: #FF5E3A;
+  .memo-bg-secondary {
+    background-color: #333333;
   }
   
-  .memo-bg-purple {
-    background-color: #5038ED;
+  .memo-bg-light {
+    background-color: #F9F9F9;
   }
   
-  .memo-bg-blue {
-    background-color: #2BA4BE;
+  .memo-bg-accent {
+    background-color: #000000;
   }
   
   /* Memorisely gradients */
-  .memo-gradient-pink {
-    background: linear-gradient(135deg, #F37485 0%, #E93C67 100%);
+  .memo-gradient-dark {
+    background: linear-gradient(135deg, #1A1A1A 0%, #000000 100%);
   }
   
-  .memo-gradient-orange {
-    background: linear-gradient(135deg, #FF8669 0%, #FF5E3A 100%);
+  .memo-gradient-light {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
   }
   
-  .memo-gradient-purple {
-    background: linear-gradient(135deg, #9181F4 0%, #5038ED 100%);
-  }
-  
-  .memo-gradient-blue {
-    background: linear-gradient(135deg, #40C8E0 0%, #2BA4BE 100%);
+  .memo-gradient-subtle {
+    background: linear-gradient(135deg, #F9F9F9 0%, #EFEFEF 100%);
   }
   
   /* Shadow styles */
