@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Clock, Sparkles, Users, Laptop, XOctagon } from "lucide-react";
+import AdminSetupButton from "@/components/AdminSetupButton";
 
 export default function LandingPage() {
   const [_, setLocation] = useLocation();
@@ -251,8 +252,11 @@ export default function LandingPage() {
               </div>
               <span className="font-semibold text-lg ml-3 text-[#212121]">Design Deck</span>
             </div>
-            <div className="text-sm text-[#414141]">
-              © {new Date().getFullYear()} Design Deck. All rights reserved.
+            <div className="flex flex-col items-end gap-2">
+              <div className="text-sm text-[#414141]">
+                © {new Date().getFullYear()} Design Deck. All rights reserved.
+              </div>
+              <AdminSetupButton />
             </div>
           </div>
         </div>

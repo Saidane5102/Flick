@@ -277,6 +277,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch user stats" });
     }
   });
+  
+  // Temporary route to make a user an admin
+  app.post("/api/temp-admin/:username", async (req, res) => {
+    try {
+      const username = req.params.username;
+      const user = await storage.getUserByUsername(username);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Update user to be an admin
+      const updatedUser = await storage.updateUser(user.id, { isAdmin: true });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to update user" });
+      }
+      
+      res.status(200).json({ 
+        message: "User is now an admin", 
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.username,
+          isAdmin: updatedUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error("Error making user admin:", error);
+      res.status(500).json({ message: "Failed to make user an admin" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
