@@ -1,14 +1,25 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Star, Clock, Sparkles, Users, Laptop, XOctagon } from "lucide-react";
+import { ArrowRight, Star, Clock, Sparkles, Users, Laptop, XOctagon, RefreshCw } from "lucide-react";
 import AdminSetupButton from "@/components/AdminSetupButton";
 
 export default function LandingPage() {
   const [_, setLocation] = useLocation();
+  const [flippedCards, setFlippedCards] = useState({
+    client: false,
+    audience: false
+  });
   
   const goToLogin = () => {
     setLocation("/auth");
+  };
+  
+  const flipCard = (cardType: 'client' | 'audience') => {
+    setFlippedCards(prev => ({
+      ...prev,
+      [cardType]: !prev[cardType]
+    }));
   };
   
   return (
@@ -69,26 +80,159 @@ export default function LandingPage() {
                 {/* Interactive Card Example - Memorisely & Bento Style */}
                 <div className="memo-bento-card overflow-hidden shadow-sm p-6 transition-all hover:shadow-md">
                   <div className="grid grid-cols-2 gap-5">
-                    <div className="card-preview rounded-[16px] flex flex-col items-center justify-center p-4 text-white shadow-sm h-48"
-                         style={{ background: '#212121' }}>
-                      <div className="bg-white/10 rounded-[8px] p-3 mb-3">
-                        <Laptop className="h-5 w-5" />
-                      </div>
-                      <h3 className="font-semibold text-base mb-1">Client</h3>
-                      <p className="text-xs text-center opacity-80">Who you're designing for</p>
-                      <div className="bg-white/10 rounded-[8px] px-3 py-2 mt-3">
-                        <p className="text-sm font-medium">Click to reveal</p>
+                    <div className="relative card-container h-48 perspective-500">
+                      <div 
+                        className="card absolute w-full h-full transition-transform duration-500"
+                        style={{ 
+                          transformStyle: "preserve-3d",
+                          transform: flippedCards.client ? "rotateY(180deg)" : "rotateY(0deg)",
+                          transition: "all 0.5s ease"
+                        }}
+                        onClick={() => flipCard('client')}
+                      >
+                        {/* Client Card Front */}
+                        <div 
+                          className="card-front absolute w-full h-full rounded-[16px] flex flex-col items-center justify-center p-5 text-white backface-hidden border border-[#E9E6DD]"
+                          style={{ 
+                            background: 'linear-gradient(145deg, #313131, #212121)',
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                          }}
+                        >
+                          <div className="flex flex-col items-center justify-center h-full">
+                            <div className="mb-4 bg-white/20 p-3 rounded-[10px] shadow-sm">
+                              <Laptop className="h-5 w-5" />
+                            </div>
+                            <h3 className="text-base font-semibold mb-1 text-white">Client</h3>
+                            <p className="text-xs text-white/90 text-center mb-4">
+                              Who you're designing for
+                            </p>
+                            <div className="flex items-center justify-center text-xs font-medium bg-white/20 px-3 py-1.5 rounded-[8px] shadow-sm hover:bg-white/25 transition-colors">
+                              <Sparkles className="h-3.5 w-3.5 mr-1 text-white" />
+                              <span className="text-white">Click to reveal</span>
+                            </div>
+                          </div>
+                          
+                          {/* Decorative elements */}
+                          <div className="absolute top-3 right-3 opacity-30">
+                            <div className="h-8 w-8 rounded-full border-2 border-white/40"></div>
+                          </div>
+                          <div className="absolute bottom-4 left-3 opacity-30">
+                            <div className="h-6 w-6 rounded-[8px] border-2 border-white/40"></div>
+                          </div>
+                        </div>
+
+                        {/* Client Card Back */}
+                        <div
+                          className="card-back absolute w-full h-full rounded-[16px] flex flex-col p-4 backface-hidden"
+                          style={{ 
+                            transform: "rotateY(180deg)",
+                            backgroundColor: "#FAF9F7",
+                            border: "1px solid #E9E6DD",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)"
+                          }}
+                        >
+                          <div className="flex items-center mb-2">
+                            <div className="rounded-[8px] w-fit p-1.5 mr-2 bg-[#E9E6DD] text-[#212121]">
+                              <Laptop className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <span className="text-xs uppercase font-medium tracking-wider text-[#212121]">
+                                Client
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <h4 className="font-semibold text-sm text-[#212121] mb-2">Local coffee shop</h4>
+                          <div className="border-t border-[#E9E6DD] mb-2"></div>
+                          <div className="flex-1 overflow-auto custom-scrollbar mb-3">
+                            <p className="text-xs text-[#414141] leading-[18px]">A neighborhood café looking to modernize their brand while keeping their community focus. They offer artisanal coffee, pastries, and a quiet space to work.</p>
+                          </div>
+                          <button
+                            className="bg-[#212121] text-white text-xs flex items-center justify-center py-1.5 px-3 rounded-[8px] hover:bg-black transition-colors"
+                            onClick={(e) => { e.stopPropagation(); flipCard('client'); }}
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                            Flip card
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <div className="card-preview rounded-[16px] flex flex-col items-center justify-center p-4 text-white shadow-sm h-48"
-                         style={{ background: '#313131' }}>
-                      <div className="bg-white/10 rounded-[8px] p-3 mb-3">
-                        <Users className="h-5 w-5" />
-                      </div>
-                      <h3 className="font-semibold text-base mb-1">Audience</h3>
-                      <p className="text-xs text-center opacity-80">Target demographic</p>
-                      <div className="bg-white/10 rounded-[8px] px-3 py-2 mt-3">
-                        <p className="text-sm font-medium">Click to reveal</p>
+
+                    <div className="relative card-container h-48 perspective-500">
+                      <div 
+                        className="card absolute w-full h-full transition-transform duration-500"
+                        style={{ 
+                          transformStyle: "preserve-3d",
+                          transform: flippedCards.audience ? "rotateY(180deg)" : "rotateY(0deg)",
+                          transition: "all 0.5s ease"
+                        }}
+                        onClick={() => flipCard('audience')}
+                      >
+                        {/* Audience Card Front */}
+                        <div 
+                          className="card-front absolute w-full h-full rounded-[16px] flex flex-col items-center justify-center p-5 text-white backface-hidden border border-[#E9E6DD]"
+                          style={{ 
+                            background: 'linear-gradient(145deg, #313131, #212121)',
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+                          }}
+                        >
+                          <div className="flex flex-col items-center justify-center h-full">
+                            <div className="mb-4 bg-white/20 p-3 rounded-[10px] shadow-sm">
+                              <Users className="h-5 w-5" />
+                            </div>
+                            <h3 className="text-base font-semibold mb-1 text-white">Audience</h3>
+                            <p className="text-xs text-white/90 text-center mb-4">
+                              Target demographic
+                            </p>
+                            <div className="flex items-center justify-center text-xs font-medium bg-white/20 px-3 py-1.5 rounded-[8px] shadow-sm hover:bg-white/25 transition-colors">
+                              <Sparkles className="h-3.5 w-3.5 mr-1 text-white" />
+                              <span className="text-white">Click to reveal</span>
+                            </div>
+                          </div>
+                          
+                          {/* Decorative elements */}
+                          <div className="absolute top-3 right-3 opacity-30">
+                            <div className="h-8 w-8 rounded-full border-2 border-white/40"></div>
+                          </div>
+                          <div className="absolute bottom-4 left-3 opacity-30">
+                            <div className="h-6 w-6 rounded-[8px] border-2 border-white/40"></div>
+                          </div>
+                        </div>
+
+                        {/* Audience Card Back */}
+                        <div
+                          className="card-back absolute w-full h-full rounded-[16px] flex flex-col p-4 backface-hidden"
+                          style={{ 
+                            transform: "rotateY(180deg)",
+                            backgroundColor: "#FAF9F7",
+                            border: "1px solid #E9E6DD",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)"
+                          }}
+                        >
+                          <div className="flex items-center mb-2">
+                            <div className="rounded-[8px] w-fit p-1.5 mr-2 bg-[#E9E6DD] text-[#212121]">
+                              <Users className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <span className="text-xs uppercase font-medium tracking-wider text-[#212121]">
+                                Audience
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <h4 className="font-semibold text-sm text-[#212121] mb-2">Young professionals</h4>
+                          <div className="border-t border-[#E9E6DD] mb-2"></div>
+                          <div className="flex-1 overflow-auto custom-scrollbar mb-3">
+                            <p className="text-xs text-[#414141] leading-[18px]">Urban professionals aged 25-35 who value quality, sustainability, and a good work environment. They're tech-savvy and willing to pay more for an exceptional experience.</p>
+                          </div>
+                          <button
+                            className="bg-[#212121] text-white text-xs flex items-center justify-center py-1.5 px-3 rounded-[8px] hover:bg-black transition-colors"
+                            onClick={(e) => { e.stopPropagation(); flipCard('audience'); }}
+                          >
+                            <RefreshCw className="h-3 w-3 mr-1" strokeWidth={1.5} />
+                            Flip card
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

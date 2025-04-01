@@ -159,29 +159,29 @@ export default function CardDeck({ reduceMotion }: CardDeckProps) {
     <section className="mb-16">
       <div className="flex flex-col items-center">
         {/* Card drawing controls */}
-        <div className="mb-12 flex flex-col sm:flex-row items-center gap-4">
+        <div className="mb-8 flex flex-col sm:flex-row items-center gap-4">
           <Button
             onClick={drawRandomCards}
-            className="apple-button bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-3 px-8 shadow-md hover:shadow-lg transform transition hover:-translate-y-1 flex items-center"
+            className="bg-[#212121] hover:bg-black text-white font-medium py-2.5 px-6 rounded-[8px] shadow-sm transition-colors flex items-center"
           >
-            <Shuffle className="h-4.5 w-4.5 mr-2" />
+            <Shuffle className="h-4 w-4 mr-2" strokeWidth={1.5} />
             Draw Cards
           </Button>
           
           {rerollVisible && (
             <Button
               onClick={rerollAll}
-              variant="secondary"
-              className="apple-button bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium py-3 px-8 shadow-md hover:shadow-lg transform transition hover:-translate-y-1 flex items-center"
+              variant="outline"
+              className="border-[#E9E6DD] bg-transparent text-[#212121] hover:bg-[#E9E6DD] rounded-[8px] font-medium py-2.5 px-6 transition-colors flex items-center"
             >
-              <RefreshCw className="h-4.5 w-4.5 mr-2" />
+              <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
               Reroll All
             </Button>
           )}
         </div>
 
         {/* Card display area */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl">
           {Object.keys(CardCategory).map(categoryKey => {
             const category = CardCategory[categoryKey as keyof typeof CardCategory];
             const card = selectedCards[category];

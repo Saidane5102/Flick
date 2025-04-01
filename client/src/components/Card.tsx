@@ -84,17 +84,17 @@ export default function Card({
   return (
     <div className="card-container perspective-1000 group">
       <div
-        className="card w-[220px] h-[340px] mx-auto rounded-[20px] cursor-pointer relative transform transition-all duration-150 ease-out hover:translate-y-[-5px]"
+        className="card w-[200px] h-[310px] mx-auto rounded-[16px] cursor-pointer relative transform transition-all duration-150 ease-out hover:translate-y-[-3px]"
         style={{
           ...flipCardStyle, 
-          boxShadow: "0 8px 20px rgba(0, 0, 0, 0.08)", 
-          transition: "all 0.3s ease"
+          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.07)", 
+          transition: "all 0.25s ease"
         }}
         onClick={onFlip}
       >
         {/* Card Front - Memorisely Style */}
         <div
-          className={`card-front absolute w-full h-full rounded-[20px] flex flex-col items-center justify-center p-6 text-white backface-hidden border border-[#E9E6DD]`}
+          className={`card-front absolute w-full h-full rounded-[16px] flex flex-col items-center justify-center p-5 text-white backface-hidden border border-[#E9E6DD]`}
           style={{ 
             background: 'linear-gradient(145deg, #313131, #212121)',
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
@@ -128,12 +128,12 @@ export default function Card({
 
         {/* Card Back - Memorisely Style */}
         <div
-          className={`card-back absolute w-full h-full rounded-[20px] flex flex-col p-6 backface-hidden`}
+          className={`card-back absolute w-full h-full rounded-[16px] flex flex-col p-5 backface-hidden`}
           style={{ 
             transform: "rotateY(180deg)",
             backgroundColor: "#FAF9F7",
             border: "1px solid #E9E6DD",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.06)"
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)"
           }}
         >
           <div className="flex items-center mb-4">

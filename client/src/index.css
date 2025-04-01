@@ -93,6 +93,10 @@
     perspective: 1000px;
   }
   
+  .perspective-500 {
+    perspective: 500px;
+  }
+  
   .backface-hidden {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
