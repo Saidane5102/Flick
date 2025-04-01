@@ -237,20 +237,10 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        {/* Multi-step upload process indicator */}
-        <div className="mb-6 mt-2">
-          <div className="flex justify-between mb-2">
-            <div className="flex items-center text-sm font-medium">
-              <div className="rounded-full h-6 w-6 flex items-center justify-center bg-[#212121] text-white mr-2">1</div>
-              <span>Project details</span>
-            </div>
-            <ChevronRight className="h-4 w-4 text-[#212121]" />
-            <div className="flex items-center text-sm text-[#414141]">
-              <div className="rounded-full h-6 w-6 flex items-center justify-center border border-[#E9E6DD] mr-2">2</div>
-              <span>Review & publish</span>
-            </div>
-          </div>
-          <Progress value={50} className="h-1 bg-[#E9E6DD]" indicatorClassName="bg-[#212121]" />
+        {/* Behance-style header */}
+        <div className="mb-6 pb-4 border-b border-[#E9E6DD]">
+          <h2 className="text-xl font-semibold text-[#212121] mb-2">Commencer la création de votre projet</h2>
+          <p className="text-sm text-[#414141]">Créez, partagez et recevez des commentaires sur votre travail de conception</p>
         </div>
       
         {/* Design brief preview */}
@@ -260,6 +250,44 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
             <Label className="text-sm font-medium text-[#212121]">Design Brief</Label>
           </div>
           <p className="text-sm text-[#414141] leading-relaxed">{brief}</p>
+        </div>
+        
+        {/* Behance-style content selection */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-[#212121] mb-4">Ajouter contenu</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-[8px] py-4 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer">
+              <div className="w-8 h-8 flex items-center justify-center mb-2">
+                <ImageIcon className="w-6 h-6 text-[#212121]" />
+              </div>
+              <span className="text-xs text-center text-[#212121]">Image</span>
+            </div>
+            <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-[8px] py-4 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer opacity-50">
+              <div className="w-8 h-8 flex items-center justify-center mb-2">
+                <span className="text-[#212121] font-semibold">T</span>
+              </div>
+              <span className="text-xs text-center text-[#212121]">Texte</span>
+            </div>
+            <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-[8px] py-4 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer opacity-50">
+              <div className="w-8 h-8 flex items-center justify-center mb-2">
+                <div className="grid grid-cols-2 gap-1">
+                  <div className="w-2.5 h-2.5 bg-[#CDCDCD]"></div>
+                  <div className="w-2.5 h-2.5 bg-[#CDCDCD]"></div>
+                  <div className="w-2.5 h-2.5 bg-[#CDCDCD]"></div>
+                  <div className="w-2.5 h-2.5 bg-[#CDCDCD]"></div>
+                </div>
+              </div>
+              <span className="text-xs text-center text-[#212121]">Grille photo</span>
+            </div>
+            <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-[8px] py-4 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer opacity-50">
+              <div className="w-8 h-8 flex items-center justify-center mb-2">
+                <div className="rounded-full w-5 h-5 border-2 border-[#CDCDCD] flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 bg-[#CDCDCD] rounded-full"></div>
+                </div>
+              </div>
+              <span className="text-xs text-center text-[#212121]">Vidéo/Audio</span>
+            </div>
+          </div>
         </div>
         
         {/* Upload area - follows Behance style */}
@@ -292,7 +320,6 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
                     {!preview ? (
                       <div className="border-2 border-dashed border-[#E9E6DD] rounded-[16px] bg-[#FAF9F7] p-10 flex flex-col items-center justify-center">
                         <input
-                          ref={fileInputRef}
                           type="file"
                           accept="image/*"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -344,18 +371,25 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
                             </Button>
                           </div>
                         </div>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
+                        {/* Hidden file input for the change button */}
+                        <div 
+                          id="file-upload-hidden-container"
                           className="hidden"
-                          aria-label="Upload Design Image"
-                          onChange={(e) => {
-                            onChange(e.target.files);
-                            handleImageChange(e.target.files);
-                          }}
-                          {...fieldProps}
-                        />
+                        >
+                          <input
+                            id="file-upload-hidden"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            aria-label="Upload Design Image"
+                            onChange={(e) => {
+                              onChange(e.target.files);
+                              handleImageChange(e.target.files);
+                            }}
+                            {...fieldProps}
+                            ref={fileInputRef}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
@@ -417,15 +451,10 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
                     placeholder="Enter a title for your design" 
                     {...field} 
                     aria-label="Project Title"
-                    ref={(e) => {
-                      field.ref(e);
-                      if (form.formState.errors.title) {
-                        errorRefs.title.current = e;
-                      }
-                    }}
+                    ref={field.ref}
                   />
                 </FormControl>
-                <FormMessage ref={errorRefs.title} tabIndex={-1} />
+                <FormMessage tabIndex={-1} />
               </FormItem>
             )}
           />
@@ -547,12 +576,21 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
           </div>
         )}
         
-        {/* Action buttons */}
-        <div className="flex justify-end pt-4 border-t border-[#E9E6DD] mt-6">
+        {/* Action buttons - Behance style */}
+        <div className="flex justify-end pt-6 border-t border-[#E9E6DD] mt-6 gap-3">
+          <Button
+            type="button"
+            disabled={isUploading}
+            variant="outline"
+            className="border-[#E9E6DD] hover:bg-[#F5F5F5] text-[#414141] transition-colors"
+            aria-label="Save as Draft"
+          >
+            Enregistrer comme brouillon
+          </Button>
           <Button
             type="submit"
             disabled={isUploading}
-            className="bg-[#212121] hover:bg-black text-white transition-colors"
+            className="bg-[#0057FF] hover:bg-[#003ECC] text-white transition-colors"
             aria-label="Publish Design"
           >
             {uploadMutation.isPending ? (
@@ -562,8 +600,7 @@ export default function UploadDesign({ brief, cardIds, onSuccess }: UploadDesign
               </>
             ) : (
               <>
-                <Upload className="mr-2 h-4 w-4" />
-                Publish Design
+                Continuer
               </>
             )}
           </Button>

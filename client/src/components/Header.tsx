@@ -13,7 +13,7 @@ import {
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
   const { user, logoutMutation } = useAuth();
 
   const toggleMobileMenu = () => {
@@ -75,6 +75,14 @@ export default function Header() {
                   Signed in as <strong className="ml-1">{user.username}</strong>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[#E9E6DD]" />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <div className="flex items-center cursor-pointer py-2 text-[#212121]">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>My Profile</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
                 {user.isAdmin && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">
@@ -133,15 +141,25 @@ export default function Header() {
             </button>
             {user && (
               <>
+                <div className="block" onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/profile");
+                }}>
+                  <div className="flex items-center text-[#212121] hover:text-black text-sm cursor-pointer">
+                    <User className="h-4 w-4 mr-2" />
+                    My Profile
+                  </div>
+                </div>
                 {user.isAdmin && (
-                  <Link href="/admin">
-                    <a className="block text-[#212121] hover:text-black text-sm" onClick={() => setMobileMenuOpen(false)}>
-                      <div className="flex items-center">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Admin Panel
-                      </div>
-                    </a>
-                  </Link>
+                  <div className="block" onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate("/admin");
+                  }}>
+                    <div className="flex items-center text-[#212121] hover:text-black text-sm cursor-pointer">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Admin Panel
+                    </div>
+                  </div>
                 )}
                 <button 
                   className="flex items-center text-[#212121] hover:text-black text-sm"
