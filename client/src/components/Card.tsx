@@ -84,52 +84,60 @@ export default function Card({
   return (
     <div className="card-container perspective-1000 group">
       <div
-        className="card w-[220px] h-[340px] mx-auto rounded-[20px] cursor-pointer relative transform transition-all duration-150 ease-out"
-        style={{...flipCardStyle, boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)"}}
+        className="card w-[220px] h-[340px] mx-auto rounded-[20px] cursor-pointer relative transform transition-all duration-150 ease-out hover:translate-y-[-5px]"
+        style={{
+          ...flipCardStyle, 
+          boxShadow: "0 8px 20px rgba(0, 0, 0, 0.08)", 
+          transition: "all 0.3s ease"
+        }}
         onClick={onFlip}
       >
         {/* Card Front - Memorisely Style */}
         <div
-          className={`card-front absolute w-full h-full rounded-[20px] flex flex-col items-center justify-center p-6 text-white backface-hidden border border-gray-800/5`}
-          style={{ background: '#212121' }}
+          className={`card-front absolute w-full h-full rounded-[20px] flex flex-col items-center justify-center p-6 text-white backface-hidden border border-[#E9E6DD]`}
+          style={{ 
+            background: 'linear-gradient(145deg, #313131, #212121)',
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)"
+          }}
         >
           <div className="flex flex-col items-center justify-center h-full">
-            <div className="mb-5 bg-white/10 p-4 rounded-[10px]">
+            <div className="mb-5 bg-white/20 p-4 rounded-[10px] shadow-sm">
               {cardIcon}
             </div>
-            <h3 className="text-xl font-semibold mb-2">{category}</h3>
-            <p className="text-sm opacity-90 text-center mb-6">
+            <h3 className="text-xl font-semibold mb-2 text-white">{category}</h3>
+            <p className="text-sm text-white/90 text-center mb-6">
               {category === CardCategory.CLIENT && "Who you're designing for"}
               {category === CardCategory.NEED && "What the client needs"}
               {category === CardCategory.CHALLENGE && "Design constraints"}
               {category === CardCategory.AUDIENCE && "Target demographic"}
             </p>
-            <div className="flex items-center justify-center text-sm font-medium bg-white/10 px-3 py-2 rounded-[8px]">
-              <Sparkles className="h-4 w-4 mr-1.5" />
-              <span>Click to reveal</span>
+            <div className="flex items-center justify-center text-sm font-medium bg-white/20 px-4 py-2 rounded-[8px] shadow-sm hover:bg-white/25 transition-colors">
+              <Sparkles className="h-4 w-4 mr-1.5 text-white" />
+              <span className="text-white">Click to reveal</span>
             </div>
           </div>
           
           {/* Decorative elements - Bento UI inspired */}
-          <div className="absolute top-4 right-4 opacity-20">
-            <div className="h-12 w-12 rounded-full border border-white/30"></div>
+          <div className="absolute top-4 right-4 opacity-30">
+            <div className="h-12 w-12 rounded-full border-2 border-white/40"></div>
           </div>
-          <div className="absolute bottom-6 left-4 opacity-20">
-            <div className="h-8 w-8 rounded-[8px] border border-white/30"></div>
+          <div className="absolute bottom-6 left-4 opacity-30">
+            <div className="h-8 w-8 rounded-[8px] border-2 border-white/40"></div>
           </div>
         </div>
 
         {/* Card Back - Memorisely Style */}
         <div
-          className={`card-back absolute w-full h-full rounded-[20px] flex flex-col p-6 backface-hidden shadow-sm`}
+          className={`card-back absolute w-full h-full rounded-[20px] flex flex-col p-6 backface-hidden`}
           style={{ 
             transform: "rotateY(180deg)",
             backgroundColor: "#FAF9F7",
-            border: "1px solid #E9E6DD"
+            border: "1px solid #E9E6DD",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.06)"
           }}
         >
           <div className="flex items-center mb-4">
-            <div className="rounded-[8px] w-fit p-2 mr-3 bg-[#E9E6DD] text-[#212121]">
+            <div className="rounded-[8px] w-fit p-2 mr-3 bg-[#E9E6DD] text-[#212121] shadow-sm">
               {cardIcon}
             </div>
             <div>
@@ -145,7 +153,7 @@ export default function Card({
             <p className="text-sm text-[#414141] leading-[20px]">{backContent}</p>
           </div>
           <button
-            className="bg-[#212121] text-white text-sm flex items-center justify-center py-2 px-4 rounded-[8px] hover:bg-black transition-colors"
+            className="bg-[#212121] text-white text-sm flex items-center justify-center py-2.5 px-4 rounded-[8px] hover:bg-black transition-colors shadow-sm"
             onClick={handleReroll}
           >
             <RefreshCw className="h-4 w-4 mr-1.5" strokeWidth={1.5} />
