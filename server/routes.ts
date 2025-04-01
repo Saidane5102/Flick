@@ -20,10 +20,10 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 const storage_config = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
     cb(null, uploadsDir);
   },
-  filename: function (req, file, cb) {
+  filename: function (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, file.fieldname + "-" + uniqueSuffix + ext);
@@ -35,7 +35,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit as per requirements
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     // Accept only images
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
@@ -135,6 +135,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch designs" });
     }
   });
+  
+  // Get designs by user ID
+  app.get("/api/users/:userId/designs", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const designs = await storage.getDesignsByUser(userId);
+      res.status(200).json(designs);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user designs" });
+    }
+  });
 
   app.get("/api/designs/user/:userId", async (req, res) => {
     try {
@@ -161,7 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/designs", upload.single("image"), async (req, res) => {
+  app.post("/api/designs", upload.single("image"), async (req: Request & { file?: Express.Multer.File, user?: Express.User }, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Must be logged in to submit designs" });
     }

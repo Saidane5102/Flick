@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card as CardType } from "@shared/schema";
 import { Upload, Save, Clock } from "lucide-react";
@@ -32,6 +33,7 @@ export default function DesignBrief({
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const { user } = useAuth();
+  const { toast } = useToast();
   const [_, navigate] = useLocation();
 
   if (!clientCard || !needCard || !challengeCard || !audienceCard) {
@@ -55,6 +57,10 @@ export default function DesignBrief({
       text: briefText,
       cardIds,
       timestamp: new Date().toISOString(),
+      client: clientCard.promptText,
+      need: needCard.promptText,
+      challenge: challengeCard.promptText,
+      audience: audienceCard.promptText
     };
     
     // For now, just save to localStorage
@@ -62,8 +68,11 @@ export default function DesignBrief({
     savedBriefs.push(brief);
     localStorage.setItem("savedBriefs", JSON.stringify(savedBriefs));
     
-    // Show a toast or notification that the brief was saved
-    alert("Brief saved!");
+    // Show toast that the brief was saved
+    toast({
+      title: "Brief saved",
+      description: "Your design brief has been saved for later",
+    });
   };
 
   return (
