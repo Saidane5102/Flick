@@ -105,262 +105,224 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
     image: useRef<HTMLDivElement>(null),
     tags: useRef<HTMLDivElement>(null),
   };
-
+  
+  // Form definition
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
-      tags: [],
       imageAltText: "",
     },
+    mode: "onChange",
   });
   
-  // Focus first error on submission
-  useEffect(() => {
-    if (lastErrorField && errorRefs[lastErrorField as keyof typeof errorRefs]?.current) {
-      errorRefs[lastErrorField as keyof typeof errorRefs].current?.focus();
-      setLastErrorField(null);
-    }
-  }, [lastErrorField]);
-
-  // Simulate upload progress
-  useEffect(() => {
-    if (isUploading && uploadProgress < 100) {
-      const timer = setTimeout(() => {
-        setUploadProgress(prev => {
-          const next = prev + 5;
-          return next > 95 ? 95 : next;
-        });
-      }, 150);
-      return () => clearTimeout(timer);
-    }
-  }, [isUploading, uploadProgress]);
-
+  // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (data: FormData) => {
       setIsUploading(true);
-      setUploadProgress(0);
       
-      const response = await fetch("/api/designs", {
-        method: "POST",
-        credentials: "include",
+      const response = await fetch('/api/designs', {
+        method: 'POST',
         body: data,
       });
       
-      // Complete the progress bar
-      setUploadProgress(100);
-      
       if (!response.ok) {
-        throw new Error(await response.text() || "Failed to upload design");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to upload");
       }
+      
+      // Simulate progress
+      const simulateProgress = () => {
+        setUploadProgress((prev) => {
+          const next = prev + Math.random() * 20;
+          return next > 95 ? 95 : next;
+        });
+      };
+      
+      const timer = setInterval(simulateProgress, 500);
+      setTimeout(() => {
+        clearInterval(timer);
+        setUploadProgress(100);
+      }, 2000);
       
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      setIsUploading(false);
+      setUploadProgress(0);
+      
       toast({
-        title: "Design published successfully",
-        description: "Your design has been shared with the community",
+        title: "Projet publié!",
+        description: "Votre travail a été publié avec succès.",
+        variant: "default",
       });
       
       if (onSuccess) {
         onSuccess();
       }
-      
-      setIsUploading(false);
     },
     onError: (error: Error) => {
+      setIsUploading(false);
+      setUploadProgress(0);
+      
       toast({
-        title: "Upload failed",
-        description: error.message || "There was an error uploading your design",
+        title: "Erreur de publication",
+        description: error.message || "Une erreur est survenue. Veuillez réessayer.",
         variant: "destructive",
       });
       
-      setIsUploading(false);
+      setLastErrorField("image");
+      errorRefs.image.current?.focus();
     },
   });
-
+  
+  // Handle form submission
+  const onSubmit = (values: FormValues) => {
+    if (values.image && values.image.length > 0) {
+      const formData = new FormData();
+      formData.append("image", values.image[0]);
+      formData.append("title", values.title);
+      formData.append("userId", user?.id.toString() || "");
+      formData.append("description", values.description || "");
+      formData.append("tags", JSON.stringify(tags));
+      formData.append("cardIds", JSON.stringify(cardIds));
+      formData.append("imageAltText", values.imageAltText || "");
+      
+      // Add content blocks to form data
+      formData.append("contentBlocks", JSON.stringify(contentBlocks));
+      
+      uploadMutation.mutate(formData);
+    }
+  };
+  
+  // Handle image selection
   const handleImageChange = (files: FileList | null) => {
     if (files && files.length > 0) {
       const file = files[0];
+      
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Fichier trop volumineux",
+          description: "L'image ne doit pas dépasser 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!file.type.startsWith("image/")) {
+        toast({
+          title: "Format non supporté",
+          description: "Seuls les formats d'image sont acceptés.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
-        
-        // Announce image selection to screen readers
-        const announcement = document.createElement('div');
-        announcement.setAttribute('aria-live', 'polite');
-        announcement.textContent = `Image selected: ${file.name}`;
-        document.body.appendChild(announcement);
-        setTimeout(() => document.body.removeChild(announcement), 1000);
       };
       reader.readAsDataURL(file);
-    } else {
-      setPreview(null);
     }
   };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      addTag();
-    }
+  
+  // Generate unique ID for content blocks
+  const generateId = () => {
+    return Math.random().toString(36).substr(2, 9);
   };
-
-  const addTag = () => {
-    const trimmedTag = tagInput.trim();
-    if (trimmedTag && !tags.includes(trimmedTag) && tags.length < 5) {
-      setTags([...tags, trimmedTag]);
-      setTagInput('');
-      
-      // Announce tag added to screen readers
-      const announcement = document.createElement('div');
-      announcement.setAttribute('aria-live', 'polite');
-      announcement.textContent = `Tag added: ${trimmedTag}`;
-      document.body.appendChild(announcement);
-      setTimeout(() => document.body.removeChild(announcement), 500);
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
-  };
-
-  const onSubmit = (values: FormValues) => {
-    if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to upload designs",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const formData = new FormData();
-    formData.append("title", values.title);
-    formData.append("description", values.description || "");
-    formData.append("brief", brief);
-    formData.append("cardIds", JSON.stringify(cardIds));
-    formData.append("tags", JSON.stringify(tags));
-    formData.append("imageAltText", values.imageAltText || "");
-    formData.append("contentBlocks", JSON.stringify(contentBlocks));
-    
-    if (values.image && values.image.length > 0) {
-      formData.append("image", values.image[0]);
-    }
-    
-    // For image content blocks, we need to convert data URLs to files
-    const imageBlocks = contentBlocks.filter(block => 
-      block.type === 'image' && block.content && block.content.startsWith('data:')
-    );
-    
-    // Append each image from content blocks
-    imageBlocks.forEach((block, index) => {
-      const imageData = block.content;
-      const contentType = imageData.split(',')[0].split(':')[1].split(';')[0];
-      const byteString = atob(imageData.split(',')[1]);
-      const ab = new ArrayBuffer(byteString.length);
-      const ia = new Uint8Array(ab);
-      
-      for (let i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-      }
-      
-      const blob = new Blob([ab], { type: contentType });
-      const filename = `content_image_${index}.${contentType.split('/')[1]}`;
-      const file = new File([blob], filename, { type: contentType });
-      
-      formData.append(`contentImage_${block.id}`, file);
-    });
-    
-    uploadMutation.mutate(formData);
-  };
-
-  // Content block management
-  const addContentBlock = (type: 'image' | 'text' | 'heading' | 'spacer') => {
+  
+  // Add content block
+  const addContentBlock = (type: 'text' | 'heading' | 'image' | 'spacer') => {
     const newBlock: BlockData = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: generateId(),
       type,
-      content: type === 'text' ? 'Start typing here...' : 
-               type === 'heading' ? 'Heading' : 
-               type === 'image' ? '' : '',
+      content: type === 'heading' ? 'Nouveau titre' : type === 'text' ? 'Nouveau paragraphe' : '',
       size: 'full',
-      alignment: 'center'
+      alignment: 'left',
     };
     
     setContentBlocks([...contentBlocks, newBlock]);
     
     // Announce to screen readers
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.textContent = `${type} block added`;
-    document.body.appendChild(announcement);
-    setTimeout(() => document.body.removeChild(announcement), 500);
+    if (typeof document !== 'undefined') {
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.classList.add('sr-only');
+      announcement.textContent = `Élément ${type} ajouté`;
+      document.body.appendChild(announcement);
+      setTimeout(() => document.body.removeChild(announcement), 500);
+    }
   };
   
-  const handleContentImageUpload = (blockId: string, file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      updateContentBlock(blockId, { content: reader.result as string });
-    };
-    reader.readAsDataURL(file);
-  };
-  
+  // Update content block
   const updateContentBlock = (id: string, data: Partial<BlockData>) => {
-    setContentBlocks(contentBlocks.map(block => 
-      block.id === id ? { ...block, ...data } : block
-    ));
+    setContentBlocks(
+      contentBlocks.map((block) => 
+        block.id === id ? { ...block, ...data } : block
+      )
+    );
   };
   
+  // Delete content block
   const deleteContentBlock = (id: string) => {
-    setContentBlocks(contentBlocks.filter(block => block.id !== id));
+    setContentBlocks(contentBlocks.filter((block) => block.id !== id));
     
     // Announce to screen readers
-    const announcement = document.createElement('div');
-    announcement.setAttribute('aria-live', 'polite');
-    announcement.textContent = 'Block removed';
-    document.body.appendChild(announcement);
-    setTimeout(() => document.body.removeChild(announcement), 500);
+    if (typeof document !== 'undefined') {
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.classList.add('sr-only');
+      announcement.textContent = `Élément supprimé`;
+      document.body.appendChild(announcement);
+      setTimeout(() => document.body.removeChild(announcement), 500);
+    }
   };
   
+  // Move content block up
   const moveContentBlockUp = (id: string) => {
-    const index = contentBlocks.findIndex(block => block.id === id);
+    const index = contentBlocks.findIndex((block) => block.id === id);
     if (index > 0) {
       const newBlocks = [...contentBlocks];
-      [newBlocks[index], newBlocks[index - 1]] = [newBlocks[index - 1], newBlocks[index]];
+      const temp = newBlocks[index - 1];
+      newBlocks[index - 1] = newBlocks[index];
+      newBlocks[index] = temp;
       setContentBlocks(newBlocks);
-      
-      // Announce to screen readers
-      const announcement = document.createElement('div');
-      announcement.setAttribute('aria-live', 'polite');
-      announcement.textContent = 'Block moved up';
-      document.body.appendChild(announcement);
-      setTimeout(() => document.body.removeChild(announcement), 500);
     }
   };
   
+  // Move content block down
   const moveContentBlockDown = (id: string) => {
-    const index = contentBlocks.findIndex(block => block.id === id);
+    const index = contentBlocks.findIndex((block) => block.id === id);
     if (index < contentBlocks.length - 1) {
       const newBlocks = [...contentBlocks];
-      [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+      const temp = newBlocks[index + 1];
+      newBlocks[index + 1] = newBlocks[index];
+      newBlocks[index] = temp;
       setContentBlocks(newBlocks);
-      
-      // Announce to screen readers
-      const announcement = document.createElement('div');
-      announcement.setAttribute('aria-live', 'polite');
-      announcement.textContent = 'Block moved down';
-      document.body.appendChild(announcement);
-      setTimeout(() => document.body.removeChild(announcement), 500);
     }
   };
+  
+  // Reset error focus when field is fixed
+  useEffect(() => {
+    if (lastErrorField && form.formState.errors[lastErrorField as keyof FormValues] === undefined) {
+      setLastErrorField(null);
+    }
+  }, [form.formState.errors, lastErrorField]);
+  
+  // Focus error field when error occurs
+  useEffect(() => {
+    if (lastErrorField && errorRefs[lastErrorField as keyof typeof errorRefs]?.current) {
+      errorRefs[lastErrorField as keyof typeof errorRefs].current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [lastErrorField]);
   
   const selectFile = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-
+  
   const goToNextStep = () => {
     if (step === 'content') {
       if (!preview) {
@@ -416,6 +378,7 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                 type="submit"
                 disabled={isUploading || uploadMutation.isPending}
                 className="bg-[#0057FF] hover:bg-[#003ECC] text-white"
+                aria-label={step === 'metadata' ? 'Publier le projet' : 'Passer à l\'étape suivante'}
               >
                 {uploadMutation.isPending ? (
                   <>
@@ -438,12 +401,185 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
             </div>
           </div>
           
-          {/* Main content area - 3/4 preview, 1/4 tools */}
-          <div className="flex flex-1 overflow-hidden">
-            {/* Preview area - 3/4 width */}
-            <div className="w-3/4 bg-[#F5F5F5] overflow-auto p-8">
-              <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8 min-h-[calc(100vh-7rem)]">
-                {preview ? (
+          {step === 'content' ? (
+            /* Content creation step */
+            <div className="flex flex-1 overflow-hidden">
+              {/* Preview area - full width */}
+              <div className="w-full bg-[#F5F5F5] overflow-auto p-8">
+                <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8 min-h-[calc(100vh-7rem)]" tabIndex={0} aria-label="Espace d'édition du contenu">
+                  {!preview ? (
+                    /* Cover image upload prompt */
+                    <div className="flex flex-col items-center justify-center text-center py-20 gap-6 border-2 border-dashed border-[#E9E6DD] rounded-lg cursor-pointer hover:bg-[#FAF9F7]" 
+                         onClick={selectFile}
+                         onKeyDown={(e) => {if (e.key === 'Enter' || e.key === ' ') selectFile()}}
+                         tabIndex={0}
+                         role="button"
+                         aria-label="Ajouter l'image de couverture">
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute inset-0 w-full h-full opacity-0"
+                          id="cover-upload"
+                          aria-label="Upload Cover Image"
+                          onChange={(e) => {
+                            if (e.target.files) {
+                              form.setValue("image", e.target.files);
+                              handleImageChange(e.target.files);
+                            }
+                          }}
+                          ref={fileInputRef}
+                          tabIndex={-1}
+                        />
+                        <ImageIcon className="h-20 w-20 text-[#DDDDDD]" aria-hidden="true" />
+                      </div>
+                      <h3 className="text-2xl font-medium text-[#212121]">Ajouter une image de couverture</h3>
+                      <p className="text-[#414141] max-w-md text-lg">
+                        Formats acceptés: JPG, PNG, GIF (max 5MB)
+                      </p>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        className="bg-white border-[#E9E6DD] hover:bg-[#F5F5F5]"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectFile();
+                        }}
+                      >
+                        Parcourir
+                      </Button>
+                    </div>
+                  ) : (
+                    /* Project content editing area */
+                    <div className="space-y-8">
+                      {/* Title - Inline editable */}
+                      <div className="relative group cursor-text border-2 border-transparent hover:border-dashed hover:border-[#E9E6DD] rounded-lg p-2"
+                           onClick={() => document.getElementById('title-input')?.focus()}>
+                        <h1 className="text-3xl font-semibold text-[#212121]">
+                          <Input
+                            id="title-input"
+                            placeholder="Titre du projet"
+                            className="border-none text-3xl font-semibold focus:ring-0 p-0 hover:bg-transparent focus:bg-transparent"
+                            value={form.watch("title") || ""}
+                            onChange={(e) => form.setValue("title", e.target.value)}
+                            aria-label="Titre du projet"
+                          />
+                        </h1>
+                      </div>
+                      
+                      {/* Cover image with edit overlay */}
+                      <div className="relative group rounded-lg overflow-hidden">
+                        <img
+                          src={preview}
+                          alt={form.watch("imageAltText") || "Design preview"}
+                          className="w-full object-contain max-h-[600px]"
+                        />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 bg-black/50 transition-opacity">
+                          <Button
+                            type="button"
+                            onClick={selectFile}
+                            variant="outline"
+                            className="bg-white hover:bg-[#F5F5F5]"
+                            aria-label="Changer l'image de couverture"
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Changer l'image
+                          </Button>
+                          
+                          {/* Alt text input */}
+                          <div className="mt-4 px-4 w-full max-w-md">
+                            <Input
+                              placeholder="Ajouter un texte alternatif pour l'accessibilité"
+                              className="bg-white/90 border-[#E9E6DD]"
+                              value={form.watch("imageAltText") || ""}
+                              onChange={(e) => form.setValue("imageAltText", e.target.value)}
+                              aria-label="Texte alternatif pour l'image"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Description - Inline editable */}
+                      <div className="relative group cursor-text border-2 border-transparent hover:border-dashed hover:border-[#E9E6DD] rounded-lg p-2"
+                           onClick={() => document.getElementById('description-textarea')?.focus()}>
+                        <div className="prose prose-sm max-w-none text-[#414141]">
+                          <Textarea
+                            id="description-textarea"
+                            placeholder="Ajoutez une description pour expliquer votre processus de conception..."
+                            className="border-none focus:ring-0 p-0 min-h-[100px] resize-none hover:bg-transparent focus:bg-transparent"
+                            value={form.watch("description") || ""}
+                            onChange={(e) => form.setValue("description", e.target.value)}
+                            aria-label="Description du projet"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Content Blocks Render Area */}
+                      <div className="space-y-12">
+                        {contentBlocks.map((block, index) => (
+                          <ContentBlock
+                            key={block.id}
+                            block={block}
+                            isFirst={index === 0}
+                            isLast={index === contentBlocks.length - 1}
+                            onDelete={deleteContentBlock}
+                            onUpdate={updateContentBlock}
+                            onMoveUp={moveContentBlockUp}
+                            onMoveDown={moveContentBlockDown}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Design brief section */}
+                      <div className="bg-[#FAF9F7] border border-[#E9E6DD] rounded-[16px] p-4 mt-8">
+                        <div className="flex items-center mb-2">
+                          <Info className="h-4 w-4 text-[#212121] mr-2" />
+                          <Label className="text-sm font-medium text-[#212121]">Design Brief</Label>
+                        </div>
+                        <p className="text-sm text-[#414141] leading-relaxed">{brief}</p>
+                      </div>
+                      
+                      {/* Add content block button */}
+                      <div className="flex justify-center py-8">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="border-[#E9E6DD] bg-white hover:bg-[#F5F5F5]">
+                              <Plus className="h-4 w-4 mr-2" />
+                              <span>Ajouter un élément</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="center">
+                            <DropdownMenuLabel>Ajouter un élément</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => addContentBlock('heading')} aria-label="Ajouter un titre">
+                              <Type className="h-4 w-4 mr-2 font-bold" />
+                              <span>Titre</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addContentBlock('text')} aria-label="Ajouter un paragraphe">
+                              <Type className="h-4 w-4 mr-2" />
+                              <span>Paragraphe de texte</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addContentBlock('image')} aria-label="Ajouter une image">
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              <span>Image</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => addContentBlock('spacer')} aria-label="Ajouter un espace">
+                              <ArrowRight className="h-4 w-4 mr-2" />
+                              <span>Espace</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Metadata input step */
+            <div className="flex flex-1 overflow-hidden">
+              {/* Preview area - 2/3 width */}
+              <div className="w-2/3 bg-[#F5F5F5] overflow-auto p-8">
+                <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8 min-h-[calc(100vh-7rem)]">
                   <div className="space-y-8">
                     <h1 className="text-3xl font-semibold text-[#212121]">
                       {form.watch("title") || "Titre du projet"}
@@ -452,7 +588,7 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                     {/* Cover image */}
                     <div className="rounded-lg overflow-hidden">
                       <img
-                        src={preview}
+                        src={preview || ""}
                         alt={form.watch("imageAltText") || "Design preview"}
                         className="w-full object-contain max-h-[600px]"
                       />
@@ -467,7 +603,7 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                       )}
                     </div>
                     
-                    {/* Content Blocks Render Area */}
+                    {/* Content Blocks Preview */}
                     {contentBlocks.length > 0 && (
                       <div className="border-t border-[#E9E6DD] pt-8 mt-8 space-y-8">
                         <h2 className="text-xl font-semibold text-[#212121] mb-4">Contenu du projet</h2>
@@ -546,243 +682,27 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center py-20 gap-6">
-                    <ImageIcon className="h-20 w-20 text-[#DDDDDD]" />
-                    <h3 className="text-2xl font-medium text-[#AAAAAA]">Prévisualisation du projet</h3>
-                    <p className="text-[#AAAAAA] max-w-md text-lg">
-                      Utilisez les outils à droite pour ajouter du contenu à votre projet
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Tools area - 1/4 width */}
-            <div className="w-1/4 border-l border-[#E9E6DD] overflow-auto bg-white">
-              <div className="p-6 space-y-8">
-                {/* Content Blocks Management */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-[#212121]">Contenu du projet</h3>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="h-8 px-2 border-[#E9E6DD]">
-                          <Plus className="h-4 w-4 mr-1" />
-                          <span>Ajouter</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Ajouter un élément</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => addContentBlock('heading')}>
-                          <Type className="h-4 w-4 mr-2 font-bold" />
-                          <span>Titre</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => addContentBlock('text')}>
-                          <Type className="h-4 w-4 mr-2" />
-                          <span>Paragraphe de texte</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => addContentBlock('image')}>
-                          <ImageIcon className="h-4 w-4 mr-2" />
-                          <span>Image</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => addContentBlock('spacer')}>
-                          <ArrowRight className="h-4 w-4 mr-2" />
-                          <span>Espace</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  
-                  {/* Content blocks list */}
-                  <div className="space-y-2 mb-6">
-                    {contentBlocks.length === 0 ? (
-                      <div className="border border-dashed border-[#E9E6DD] rounded-lg p-4 text-center">
-                        <p className="text-sm text-[#AAAAAA]">
-                          Ajoutez des éléments de contenu pour créer votre projet
-                        </p>
-                      </div>
-                    ) : (
-                      contentBlocks.map((block, index) => (
-                        <ContentBlock
-                          key={block.id}
-                          block={block}
-                          isFirst={index === 0}
-                          isLast={index === contentBlocks.length - 1}
-                          onDelete={deleteContentBlock}
-                          onUpdate={updateContentBlock}
-                          onMoveUp={moveContentBlockUp}
-                          onMoveDown={moveContentBlockDown}
-                        />
-                      ))
-                    )}
-                  </div>
                 </div>
-                
-                {/* Image Upload */}
-                <FormField
-                  control={form.control}
-                  name="image"
-                  render={({ field: { onChange, value, ...fieldProps } }) => (
-                    <FormItem>
-                      <FormLabel className="text-[#212121] font-medium">
-                        Upload Design
-                      </FormLabel>
-                      <FormDescription className="text-xs text-[#414141]">
-                        Formats acceptés: JPG, PNG, GIF (max 5MB)
-                      </FormDescription>
-                      <FormControl>
-                        <div className="space-y-3">
-                          <div className="relative" ref={errorRefs.image}>
-                            {!preview ? (
-                              <div className="border-2 border-dashed border-[#E9E6DD] rounded-lg bg-[#FAF9F7] p-6 flex flex-col items-center justify-center">
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                  id="file-upload"
-                                  aria-label="Upload Design Image"
-                                  onChange={(e) => {
-                                    onChange(e.target.files);
-                                    handleImageChange(e.target.files);
-                                  }}
-                                />
-                                <ImageIcon className="h-12 w-12 text-[#414141] mb-4" />
-                                <p className="text-[#212121] font-medium mb-2 text-center">
-                                  Glissez une image ici
-                                </p>
-                                <div className="flex items-center justify-center text-sm text-[#414141]">
-                                  <span className="text-center">
-                                    ou 
-                                    <Button 
-                                      type="button" 
-                                      variant="ghost" 
-                                      className="px-2 py-1 h-auto underline text-[#212121]"
-                                      onClick={selectFile}
-                                    >
-                                      parcourir
-                                    </Button>
-                                  </span>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="rounded-lg overflow-hidden border border-[#E9E6DD]">
-                                <div className="relative bg-white">
-                                  <img
-                                    src={preview}
-                                    alt="Design preview"
-                                    className="w-full object-contain"
-                                    style={{ maxHeight: "200px" }}
-                                  />
-                                  <div className="absolute top-2 right-2">
-                                    <Button
-                                      type="button"
-                                      size="sm"
-                                      variant="outline"
-                                      className="h-8 px-2 bg-white shadow-sm hover:bg-[#F5F5F5]"
-                                      onClick={selectFile}
-                                      aria-label="Change image"
-                                    >
-                                      Changer
-                                    </Button>
-                                  </div>
-                                </div>
-                                <div className="hidden">
-                                  <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    aria-label="Upload Design Image"
-                                    onChange={(e) => {
-                                      onChange(e.target.files);
-                                      handleImageChange(e.target.files);
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Alt text for accessibility */}
-                          {preview && (
-                            <FormField
-                              control={form.control}
-                              name="imageAltText"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-sm text-[#212121]">
-                                    Alt text pour l'image
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <span className="ml-1 cursor-help">
-                                            <Info className="h-3.5 w-3.5 inline text-[#414141]" />
-                                          </span>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p className="max-w-xs text-xs">
-                                            L'alt text aide les personnes malvoyantes à comprendre votre image
-                                          </p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Décrivez votre design pour les utilisateurs malvoyants"
-                                      className="border-[#E9E6DD] text-[#212121]"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          )}
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                {/* Project Details */}
-                <div className="space-y-6">
+              </div>
+              
+              {/* Metadata input area - 1/3 width */}
+              <div className="w-1/3 border-l border-[#E9E6DD] overflow-auto bg-white p-6 space-y-8">
+                <div>
+                  <h3 className="text-sm font-medium text-[#212121] mb-4">Détails du projet</h3>
+                  
+                  {/* Title confirmation */}
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#212121] font-medium">Titre du projet</FormLabel>
+                      <FormItem className="mb-4">
+                        <FormLabel className="text-[#212121]">Titre</FormLabel>
                         <FormControl>
                           <Input 
-                            className="border-[#E9E6DD] text-[#212121]" 
-                            placeholder="Entrez un titre pour votre design" 
-                            {...field} 
-                            aria-label="Titre du projet"
-                          />
-                        </FormControl>
-                        <FormMessage tabIndex={-1} />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#212121] font-medium">Description</FormLabel>
-                        <FormDescription className="text-xs text-[#414141]">
-                          Parlez de votre processus de design, des outils utilisés et des défis relevés
-                        </FormDescription>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Ajoutez des détails sur votre approche de conception..."
-                            className="resize-none min-h-[120px] leading-relaxed border-[#E9E6DD] text-[#212121]"
                             {...field}
-                            aria-label="Description du projet"
+                            placeholder="Titre du projet" 
+                            className="border-[#E9E6DD]"
+                            aria-label="Titre du projet"
                           />
                         </FormControl>
                         <FormMessage />
@@ -790,103 +710,120 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                     )}
                   />
                   
-                  {/* Tags input */}
-                  <div className="space-y-2">
-                    <Label htmlFor="tags" className="text-[#212121] font-medium">
-                      Tags
-                      <span className="text-[#414141] font-normal ml-1">(Optionnel, max 5)</span>
-                    </Label>
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <div className="relative flex-1">
-                          <Input
-                            ref={tagInputRef}
-                            value={tagInput}
-                            onChange={(e) => setTagInput(e.target.value)}
-                            onKeyDown={handleTagKeyDown}
-                            onBlur={addTag}
-                            placeholder="Ajoutez des tags séparés par des virgules ou Entrée"
-                            className="border-[#E9E6DD] text-[#212121] pr-16"
-                            id="tags"
-                            aria-label="Ajouter Tags"
-                            maxLength={30}
-                            disabled={tags.length >= 5}
+                  {/* Alt text for main image */}
+                  <FormField
+                    control={form.control}
+                    name="imageAltText"
+                    render={({ field }) => (
+                      <FormItem className="mb-4">
+                        <FormLabel className="text-[#212121]">
+                          Texte alternatif (accessibilité)
+                        </FormLabel>
+                        <FormDescription className="text-xs text-[#414141]">
+                          Description de l'image pour les lecteurs d'écran
+                        </FormDescription>
+                        <FormControl>
+                          <Input 
+                            {...field}
+                            value={field.value || ""}
+                            placeholder="Description de l'image" 
+                            className="border-[#E9E6DD]"
+                            aria-label="Texte alternatif pour l'image"
                           />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Tags input */}
+                  <div className="mb-4">
+                    <Label className="text-[#212121] block mb-2">Tags</Label>
+                    <div className="flex items-center mb-2">
+                      <Input
+                        type="text"
+                        placeholder="Ajouter un tag..."
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        className="border-[#E9E6DD] flex-grow"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && tagInput.trim()) {
+                            e.preventDefault();
+                            if (!tags.includes(tagInput.trim())) {
+                              setTags([...tags, tagInput.trim()]);
+                            }
+                            setTagInput('');
+                          }
+                        }}
+                        ref={tagInputRef}
+                        aria-label="Ajouter un tag"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="ml-2 border-[#E9E6DD]"
+                        onClick={() => {
+                          if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+                            setTags([...tags, tagInput.trim()]);
+                            setTagInput('');
+                            tagInputRef.current?.focus();
+                          }
+                        }}
+                        aria-label="Ajouter ce tag"
+                      >
+                        Ajouter
+                      </Button>
+                    </div>
+                    
+                    {/* Tags list */}
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {tags.map((tag, index) => (
+                        <Badge key={index} variant="outline" className="py-1.5 px-3 bg-[#F5F5F5] text-[#212121] border-[#E9E6DD] group">
+                          {tag}
                           <Button
                             type="button"
-                            onClick={addTag}
-                            disabled={!tagInput.trim() || tags.length >= 5}
-                            className="absolute right-1 top-1 h-8 px-2 bg-[#EDEDED] hover:bg-[#DEDEDE] text-[#212121]"
-                            aria-label="Ajouter Tag"
+                            variant="ghost"
+                            className="h-4 w-4 p-0 ml-2 text-[#414141] hover:bg-transparent hover:text-red-500"
+                            onClick={() => {
+                              const newTags = [...tags];
+                              newTags.splice(index, 1);
+                              setTags(newTags);
+                            }}
+                            aria-label={`Supprimer le tag ${tag}`}
                           >
-                            Ajouter
+                            <X className="h-3 w-3" />
                           </Button>
-                        </div>
-                      </div>
+                        </Badge>
+                      ))}
                       
-                      {/* Tags display */}
-                      {tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2" aria-live="polite" aria-label="Tags sélectionnés">
-                          {tags.map((tag, index) => (
-                            <Badge key={index} variant="outline" className="py-1.5 px-3 bg-[#F5F5F5] text-[#212121] border-[#E9E6DD]">
-                              {tag}
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeTag(tag)}
-                                className="h-4 w-4 p-0 ml-1 text-[#414141] hover:text-[#212121] hover:bg-transparent"
-                                aria-label={`Supprimer tag ${tag}`}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </Badge>
-                          ))}
-                        </div>
+                      {tags.length === 0 && (
+                        <p className="text-sm text-[#AAAAAA] italic">
+                          Aucun tag ajouté
+                        </p>
                       )}
                     </div>
                   </div>
+                  
+                  {/* Upload progress */}
+                  {isUploading && (
+                    <div className="mt-6 space-y-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-sm text-[#212121]">Progression</Label>
+                        <span className="text-sm text-[#414141]">{uploadProgress}%</span>
+                      </div>
+                      <Progress value={uploadProgress} className="h-2" aria-label={`Progression: ${uploadProgress}%`} />
+                    </div>
+                  )}
+                  
+                  {/* Live region for screen readers */}
+                  <div className="sr-only" aria-live="polite">
+                    {uploadMutation.isPending && "Publication en cours..."}
+                    {uploadMutation.isSuccess && "Projet publié avec succès!"}
+                    {uploadMutation.isError && "Erreur lors de la publication. Veuillez réessayer."}
+                  </div>
                 </div>
-                
-                {/* Upload status area */}
-                {isUploading && (
-                  <div className="mt-4 p-4 bg-[#FAF9F7] border border-[#E9E6DD] rounded-lg" aria-live="polite">
-                    <div className="flex items-center mb-2">
-                      <Loader2 className="animate-spin h-4 w-4 text-[#212121] mr-2" />
-                      <p className="text-sm font-medium text-[#212121]">
-                        Téléchargement en cours... {uploadProgress}%
-                      </p>
-                    </div>
-                    <Progress value={uploadProgress} className="h-2 bg-[#E9E6DD]" />
-                  </div>
-                )}
-                
-                {/* Success message */}
-                {uploadProgress === 100 && !isUploading && (
-                  <div className="mt-4 p-4 bg-[#F5FFF5] border border-green-200 rounded-lg text-green-800" aria-live="polite">
-                    <div className="flex items-center">
-                      <Check className="h-5 w-5 text-green-600 mr-2" />
-                      <p className="text-sm font-medium">
-                        Design publié avec succès!
-                      </p>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Error message area */}
-                {form.formState.errors.root && (
-                  <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800" aria-live="assertive">
-                    <div className="flex items-center">
-                      <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
-                      <p className="text-sm font-medium">
-                        {form.formState.errors.root.message}
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
-          </div>
+          )}
         </form>
       </Form>
     </div>
