@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import ContentBlock, { BlockData } from "./ContentBlock";
 import { 
   Form, 
   FormControl, 
@@ -30,7 +31,9 @@ import {
   ChevronRight,
   LayoutGrid,
   Type,
-  Video
+  Video,
+  Plus,
+  ArrowRight
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +43,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface FullScreenUploadProps {
   brief: string;
@@ -78,6 +89,10 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
   const [tagInput, setTagInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tagInputRef = useRef<HTMLInputElement>(null);
+  
+  // Content blocks state
+  const [contentBlocks, setContentBlocks] = useState<BlockData[]>([]);
+  const [currentStep, setCurrentStep] = useState<'content' | 'metadata'>('content');
   
   // For accessibility focus management
   const [lastErrorField, setLastErrorField] = useState<string | null>(null);
@@ -224,14 +239,118 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
     formData.append("cardIds", JSON.stringify(cardIds));
     formData.append("tags", JSON.stringify(tags));
     formData.append("imageAltText", values.imageAltText || "");
+    formData.append("contentBlocks", JSON.stringify(contentBlocks));
     
     if (values.image && values.image.length > 0) {
       formData.append("image", values.image[0]);
     }
     
+    // For image content blocks, we need to convert data URLs to files
+    const imageBlocks = contentBlocks.filter(block => 
+      block.type === 'image' && block.content && block.content.startsWith('data:')
+    );
+    
+    // Append each image from content blocks
+    imageBlocks.forEach((block, index) => {
+      const imageData = block.content;
+      const contentType = imageData.split(',')[0].split(':')[1].split(';')[0];
+      const byteString = atob(imageData.split(',')[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      
+      const blob = new Blob([ab], { type: contentType });
+      const filename = `content_image_${index}.${contentType.split('/')[1]}`;
+      const file = new File([blob], filename, { type: contentType });
+      
+      formData.append(`contentImage_${block.id}`, file);
+    });
+    
     uploadMutation.mutate(formData);
   };
 
+  // Content block management
+  const addContentBlock = (type: 'image' | 'text' | 'heading' | 'spacer') => {
+    const newBlock: BlockData = {
+      id: Math.random().toString(36).substr(2, 9),
+      type,
+      content: type === 'text' ? 'Start typing here...' : 
+               type === 'heading' ? 'Heading' : 
+               type === 'image' ? '' : '',
+      size: 'full',
+      alignment: 'center'
+    };
+    
+    setContentBlocks([...contentBlocks, newBlock]);
+    
+    // Announce to screen readers
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.textContent = `${type} block added`;
+    document.body.appendChild(announcement);
+    setTimeout(() => document.body.removeChild(announcement), 500);
+  };
+  
+  const handleContentImageUpload = (blockId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateContentBlock(blockId, { content: reader.result as string });
+    };
+    reader.readAsDataURL(file);
+  };
+  
+  const updateContentBlock = (id: string, data: Partial<BlockData>) => {
+    setContentBlocks(contentBlocks.map(block => 
+      block.id === id ? { ...block, ...data } : block
+    ));
+  };
+  
+  const deleteContentBlock = (id: string) => {
+    setContentBlocks(contentBlocks.filter(block => block.id !== id));
+    
+    // Announce to screen readers
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.textContent = 'Block removed';
+    document.body.appendChild(announcement);
+    setTimeout(() => document.body.removeChild(announcement), 500);
+  };
+  
+  const moveContentBlockUp = (id: string) => {
+    const index = contentBlocks.findIndex(block => block.id === id);
+    if (index > 0) {
+      const newBlocks = [...contentBlocks];
+      [newBlocks[index], newBlocks[index - 1]] = [newBlocks[index - 1], newBlocks[index]];
+      setContentBlocks(newBlocks);
+      
+      // Announce to screen readers
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.textContent = 'Block moved up';
+      document.body.appendChild(announcement);
+      setTimeout(() => document.body.removeChild(announcement), 500);
+    }
+  };
+  
+  const moveContentBlockDown = (id: string) => {
+    const index = contentBlocks.findIndex(block => block.id === id);
+    if (index < contentBlocks.length - 1) {
+      const newBlocks = [...contentBlocks];
+      [newBlocks[index], newBlocks[index + 1]] = [newBlocks[index + 1], newBlocks[index]];
+      setContentBlocks(newBlocks);
+      
+      // Announce to screen readers
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.textContent = 'Block moved down';
+      document.body.appendChild(announcement);
+      setTimeout(() => document.body.removeChild(announcement), 500);
+    }
+  };
+  
   const selectFile = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -282,14 +401,16 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                       {form.watch("title") || "Titre du projet"}
                     </h1>
                     
+                    {/* Cover image */}
                     <div className="rounded-lg overflow-hidden">
                       <img
                         src={preview}
-                        alt="Design preview"
+                        alt={form.watch("imageAltText") || "Design preview"}
                         className="w-full object-contain max-h-[600px]"
                       />
                     </div>
                     
+                    {/* Description text */}
                     <div className="prose prose-sm max-w-none text-[#414141]">
                       {form.watch("description") ? (
                         <p>{form.watch("description")}</p>
@@ -298,14 +419,84 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
                       )}
                     </div>
                     
+                    {/* Content Blocks Render Area */}
+                    {contentBlocks.length > 0 && (
+                      <div className="border-t border-[#E9E6DD] pt-8 mt-8 space-y-8">
+                        <h2 className="text-xl font-semibold text-[#212121] mb-4">Contenu du projet</h2>
+                        
+                        <div className="space-y-12">
+                          {contentBlocks.map((block) => {
+                            switch (block.type) {
+                              case 'heading':
+                                return (
+                                  <div key={block.id} className={block.size === 'full' ? 'w-full' : block.size === 'large' ? 'w-5/6 mx-auto' : block.size === 'medium' ? 'w-2/3 mx-auto' : 'w-1/3 mx-auto'}>
+                                    <h3 className="text-2xl font-semibold text-[#212121]">{block.content}</h3>
+                                  </div>
+                                );
+                              case 'text':
+                                return (
+                                  <div key={block.id} className={block.size === 'full' ? 'w-full' : block.size === 'large' ? 'w-5/6 mx-auto' : block.size === 'medium' ? 'w-2/3 mx-auto' : 'w-1/3 mx-auto'}>
+                                    <p className="text-[#414141] whitespace-pre-wrap">{block.content}</p>
+                                  </div>
+                                );
+                              case 'image':
+                                return (
+                                  <div key={block.id} className={block.size === 'full' ? 'w-full' : block.size === 'large' ? 'w-5/6 mx-auto' : block.size === 'medium' ? 'w-2/3 mx-auto' : 'w-1/3 mx-auto'}>
+                                    {block.content ? (
+                                      <div>
+                                        <img 
+                                          src={block.content} 
+                                          alt={block.altText || 'Image'} 
+                                          className={`rounded-lg ${
+                                            block.alignment === 'center' ? 'mx-auto' : 
+                                            block.alignment === 'right' ? 'ml-auto' : ''
+                                          }`}
+                                        />
+                                        {block.caption && (
+                                          <p className="text-sm text-[#414141] mt-2 text-center">
+                                            {block.caption}
+                                          </p>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <div className="border-2 border-dashed border-[#E9E6DD] rounded-lg p-12 flex flex-col items-center justify-center">
+                                        <ImageIcon className="h-12 w-12 text-[#DDDDDD]" />
+                                        <p className="text-[#AAAAAA] mt-4">Aucune image téléchargée</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              case 'spacer':
+                                return (
+                                  <div key={block.id} className="h-16"></div>
+                                );
+                              default:
+                                return null;
+                            }
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
                     {/* Design brief section */}
-                    <div className="bg-[#FAF9F7] border border-[#E9E6DD] rounded-[16px] p-4">
+                    <div className="bg-[#FAF9F7] border border-[#E9E6DD] rounded-[16px] p-4 mt-8">
                       <div className="flex items-center mb-2">
                         <Info className="h-4 w-4 text-[#212121] mr-2" />
                         <Label className="text-sm font-medium text-[#212121]">Design Brief</Label>
                       </div>
                       <p className="text-sm text-[#414141] leading-relaxed">{brief}</p>
                     </div>
+                    
+                    {/* Tags display */}
+                    {tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-6">
+                        {tags.map((tag, index) => (
+                          <Badge key={index} variant="outline" className="py-1.5 px-3 bg-[#F5F5F5] text-[#212121] border-[#E9E6DD]">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full text-center py-20 gap-6">
@@ -322,34 +513,61 @@ export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }
             {/* Tools area - 1/4 width */}
             <div className="w-1/4 border-l border-[#E9E6DD] overflow-auto bg-white">
               <div className="p-6 space-y-8">
-                {/* Content Type Selection */}
+                {/* Content Blocks Management */}
                 <div>
-                  <h3 className="text-sm font-medium text-[#212121] mb-4">Ajouter contenu</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-lg py-3 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer">
-                      <div className="w-8 h-8 flex items-center justify-center mb-2">
-                        <ImageIcon className="w-5 h-5 text-[#212121]" />
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-medium text-[#212121]">Contenu du projet</h3>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 px-2 border-[#E9E6DD]">
+                          <Plus className="h-4 w-4 mr-1" />
+                          <span>Ajouter</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Ajouter un élément</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => addContentBlock('heading')}>
+                          <Type className="h-4 w-4 mr-2 font-bold" />
+                          <span>Titre</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => addContentBlock('text')}>
+                          <Type className="h-4 w-4 mr-2" />
+                          <span>Paragraphe de texte</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => addContentBlock('image')}>
+                          <ImageIcon className="h-4 w-4 mr-2" />
+                          <span>Image</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => addContentBlock('spacer')}>
+                          <ArrowRight className="h-4 w-4 mr-2" />
+                          <span>Espace</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  
+                  {/* Content blocks list */}
+                  <div className="space-y-2 mb-6">
+                    {contentBlocks.length === 0 ? (
+                      <div className="border border-dashed border-[#E9E6DD] rounded-lg p-4 text-center">
+                        <p className="text-sm text-[#AAAAAA]">
+                          Ajoutez des éléments de contenu pour créer votre projet
+                        </p>
                       </div>
-                      <span className="text-xs text-center text-[#212121]">Image</span>
-                    </div>
-                    <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-lg py-3 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer opacity-50">
-                      <div className="w-8 h-8 flex items-center justify-center mb-2">
-                        <Type className="w-5 h-5 text-[#212121]" />
-                      </div>
-                      <span className="text-xs text-center text-[#212121]">Texte</span>
-                    </div>
-                    <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-lg py-3 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer opacity-50">
-                      <div className="w-8 h-8 flex items-center justify-center mb-2">
-                        <LayoutGrid className="w-5 h-5 text-[#212121]" />
-                      </div>
-                      <span className="text-xs text-center text-[#212121]">Grille photo</span>
-                    </div>
-                    <div className="relative flex flex-col items-center justify-center border border-[#E9E6DD] rounded-lg py-3 px-2 hover:border-[#CDCDCD] transition-colors bg-[#FAF9F7] cursor-pointer opacity-50">
-                      <div className="w-8 h-8 flex items-center justify-center mb-2">
-                        <Video className="w-5 h-5 text-[#212121]" />
-                      </div>
-                      <span className="text-xs text-center text-[#212121]">Vidéo/Audio</span>
-                    </div>
+                    ) : (
+                      contentBlocks.map((block, index) => (
+                        <ContentBlock
+                          key={block.id}
+                          block={block}
+                          isFirst={index === 0}
+                          isLast={index === contentBlocks.length - 1}
+                          onDelete={deleteContentBlock}
+                          onUpdate={updateContentBlock}
+                          onMoveUp={moveContentBlockUp}
+                          onMoveDown={moveContentBlockDown}
+                        />
+                      ))
+                    )}
                   </div>
                 </div>
                 
