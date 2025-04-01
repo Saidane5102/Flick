@@ -278,6 +278,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Points and level routes
+  app.post("/api/users/:userId/points", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { points } = req.body;
+      
+      if (!points || typeof points !== 'number' || points <= 0) {
+        return res.status(400).json({ message: "Valid points value is required" });
+      }
+      
+      const user = await storage.addPoints(userId, points);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const stats = await storage.getUserStats(userId);
+      res.status(200).json({ 
+        message: `Added ${points} points to user`,
+        user: {
+          points: user.points,
+          level: user.level
+        },
+        stats
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to add points" });
+    }
+  });
+  
   // Temporary route to make a user an admin
   app.post("/api/temp-admin/:username", async (req, res) => {
     try {

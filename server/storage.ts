@@ -12,6 +12,8 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
+  addPoints(userId: number, points: number): Promise<User | undefined>;
+  updateLevel(userId: number): Promise<User | undefined>;
   
   // Card methods
   getCards(): Promise<Card[]>;
@@ -44,6 +46,10 @@ export interface IStorage {
     completedChallenges: number;
     earnedBadges: number;
     totalLikes: number;
+    points: number;
+    level: number;
+    progressToNextLevel: number;
+    nextLevelPoints: number;
   }>;
   
   // Session store
@@ -151,6 +157,8 @@ export class MemStorage implements IStorage {
     const user: User = { 
       ...insertUser, 
       id, 
+      points: 0,
+      level: 1,
       createdAt: now
     };
     this.users.set(id, user);
@@ -168,6 +176,45 @@ export class MemStorage implements IStorage {
     
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+  
+  async addPoints(userId: number, points: number): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    const updatedUser: User = {
+      ...user,
+      points: user.points + points
+    };
+    
+    this.users.set(userId, updatedUser);
+    
+    // Check if user should level up
+    this.updateLevel(userId);
+    
+    return updatedUser;
+  }
+  
+  async updateLevel(userId: number): Promise<User | undefined> {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    
+    // Calculate level based on points
+    // Formula: level = 1 + floor(sqrt(points / 25))
+    // This creates a curve where each level requires more points
+    const newLevel = 1 + Math.floor(Math.sqrt(user.points / 25));
+    
+    if (newLevel > user.level) {
+      const updatedUser: User = {
+        ...user,
+        level: newLevel
+      };
+      
+      this.users.set(userId, updatedUser);
+      return updatedUser;
+    }
+    
+    return user;
   }
   
   // Card methods
@@ -340,15 +387,38 @@ export class MemStorage implements IStorage {
     completedChallenges: number;
     earnedBadges: number;
     totalLikes: number;
+    points: number;
+    level: number;
+    nextLevelPoints: number;
+    progressToNextLevel: number;
   }> {
     const userDesigns = await this.getDesignsByUser(userId);
     const userBadges = await this.getUserBadges(userId);
     const totalLikes = userDesigns.reduce((sum, design) => sum + design.likes, 0);
+    const user = await this.getUser(userId);
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    // Calculate points needed for next level
+    // Formula is: points for level N = 25 * (N - 1)^2
+    const pointsForCurrentLevel = 25 * Math.pow(user.level - 1, 2);
+    const pointsForNextLevel = 25 * Math.pow(user.level, 2);
+    const pointsNeededForNextLevel = pointsForNextLevel - pointsForCurrentLevel;
+    const currentLevelProgress = user.points - pointsForCurrentLevel;
+    
+    // Calculate progress percentage
+    const progressPercentage = Math.min(100, Math.floor((currentLevelProgress / pointsNeededForNextLevel) * 100));
     
     return {
       completedChallenges: userDesigns.length,
       earnedBadges: userBadges.length,
-      totalLikes
+      totalLikes,
+      points: user.points,
+      level: user.level,
+      nextLevelPoints: pointsNeededForNextLevel,
+      progressToNextLevel: progressPercentage
     };
   }
 }
