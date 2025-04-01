@@ -52,7 +52,28 @@ export default function ContentBlock({
   onMoveDown 
 }: ContentBlockProps) {
   const [focused, setFocused] = useState(false);
+  const [editing, setEditing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  // Enable direct editing on block click
+  const startEditing = () => {
+    setEditing(true);
+    // Focus the appropriate element when editing starts
+    setTimeout(() => {
+      if (block.type === 'text' && textareaRef.current) {
+        textareaRef.current.focus();
+      } else if (block.type === 'heading' && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 50);
+  };
+  
+  const finishEditing = () => {
+    setEditing(false);
+    setFocused(false);
+  };
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -160,29 +181,45 @@ export default function ContentBlock({
 
       case 'text':
         return (
-          <div className={getBlockSize(block.size)}>
-            <Textarea
-              value={block.content}
-              onChange={(e) => onUpdate(block.id, { content: e.target.value })}
-              placeholder="Start typing your text..."
-              className="min-h-[120px] border-[#E9E6DD] text-[#212121] resize-none"
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-            />
+          <div className={getBlockSize(block.size)} onClick={editing ? undefined : startEditing}>
+            {editing ? (
+              <Textarea
+                ref={textareaRef}
+                value={block.content}
+                onChange={(e) => onUpdate(block.id, { content: e.target.value })}
+                placeholder="Start typing your text..."
+                className="min-h-[120px] border-[#E9E6DD] text-[#212121] resize-none"
+                onFocus={() => setFocused(true)}
+                onBlur={finishEditing}
+                autoFocus
+              />
+            ) : (
+              <div className="p-2 min-h-[100px] cursor-text rounded-lg hover:bg-[#FAFAFA]">
+                <p className="text-[#414141] whitespace-pre-wrap">{block.content || "Click to add text..."}</p>
+              </div>
+            )}
           </div>
         );
 
       case 'heading':
         return (
-          <div className={getBlockSize(block.size)}>
-            <Input
-              value={block.content}
-              onChange={(e) => onUpdate(block.id, { content: e.target.value })}
-              placeholder="Heading text here..."
-              className="text-xl font-semibold border-[#E9E6DD] text-[#212121]"
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-            />
+          <div className={getBlockSize(block.size)} onClick={editing ? undefined : startEditing}>
+            {editing ? (
+              <Input
+                ref={inputRef}
+                value={block.content}
+                onChange={(e) => onUpdate(block.id, { content: e.target.value })}
+                placeholder="Heading text here..."
+                className="text-xl font-semibold border-[#E9E6DD] text-[#212121]"
+                onFocus={() => setFocused(true)}
+                onBlur={finishEditing}
+                autoFocus
+              />
+            ) : (
+              <div className="p-2 cursor-text rounded-lg hover:bg-[#FAFAFA]">
+                <h3 className="text-2xl font-semibold text-[#212121]">{block.content || "Click to add heading..."}</h3>
+              </div>
+            )}
           </div>
         );
 
