@@ -55,6 +55,7 @@ import {
 interface FullScreenUploadProps {
   brief: string;
   cardIds: number[];
+  contentType?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -79,7 +80,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function FullScreenUpload({ brief, cardIds, onSuccess, onCancel }: FullScreenUploadProps) {
+export default function FullScreenUpload({ brief, cardIds, contentType, onSuccess, onCancel }: FullScreenUploadProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
