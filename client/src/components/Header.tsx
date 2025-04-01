@@ -76,21 +76,17 @@ export default function Header() {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-[#E9E6DD]" />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <div className="flex items-center cursor-pointer py-2 text-[#212121]">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>My Profile</span>
-                    </div>
-                  </Link>
+                  <div className="flex items-center cursor-pointer py-2 text-[#212121]" onClick={() => navigate("/profile")}>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>My Profile</span>
+                  </div>
                 </DropdownMenuItem>
                 {user.isAdmin && (
                   <DropdownMenuItem asChild>
-                    <Link href="/admin">
-                      <div className="flex items-center cursor-pointer py-2 text-[#212121]">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Admin Panel</span>
-                      </div>
-                    </Link>
+                    <div className="flex items-center cursor-pointer py-2 text-[#212121]" onClick={() => navigate("/admin")}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Admin Panel</span>
+                    </div>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={handleLogout} className="py-2 text-[#212121]">

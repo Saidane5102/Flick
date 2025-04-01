@@ -4,8 +4,8 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card as CardType } from "@shared/schema";
-import { Upload, Save, Clock } from "lucide-react";
-import UploadDesign from "./UploadDesign";
+import { Save, Clock } from "lucide-react";
+import ProjectCreationButton from "./ProjectCreationButton";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,6 @@ export default function DesignBrief({
   cardIds,
 }: DesignBriefProps) {
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const [_, navigate] = useLocation();
@@ -41,15 +40,6 @@ export default function DesignBrief({
   }
 
   const briefText = `Create a ${needCard.promptText} for a ${clientCard.promptText} with ${challengeCard.promptText}, targeting ${audienceCard.promptText}.`;
-
-  const handleStartDesign = () => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-    
-    setUploadDialogOpen(true);
-  };
 
   const saveBrief = () => {
     // This would save the brief to local storage or user's account
@@ -113,13 +103,11 @@ export default function DesignBrief({
 
           {/* Action buttons - Memorisely style */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={handleStartDesign}
+            <ProjectCreationButton
+              brief={briefText}
+              cardIds={cardIds}
               className="bg-black hover:bg-gray-800 text-white transition-colors flex items-center justify-center"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Start Design
-            </Button>
+            />
             
             <Button
               variant="outline"
@@ -161,23 +149,6 @@ export default function DesignBrief({
           </DialogContent>
         </Dialog>
       </div>
-      
-      {/* Upload Design Dialog - Memorisely style */}
-      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent className="sm:max-w-[500px] memo-card">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Upload Your Design</DialogTitle>
-            <DialogDescription className="text-gray-600">
-              Share your work with the community for feedback
-            </DialogDescription>
-          </DialogHeader>
-          <UploadDesign
-            brief={briefText}
-            cardIds={cardIds}
-            onSuccess={() => setUploadDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
