@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Card from "./Card";
 import DesignBrief from "./DesignBrief";
-import { Button } from "@/components/ui/button";
 import { CardCategory, Card as CardType } from "@shared/schema";
-import { RefreshCw, Shuffle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface CardDeckProps {
   reduceMotion: boolean;
@@ -111,11 +110,6 @@ export default function CardDeck({ reduceMotion }: CardDeckProps) {
     setShowBrief(false);
   };
 
-  // Reroll all cards
-  const rerollAll = () => {
-    drawRandomCards();
-  };
-
   // Handle card flip
   const flipCard = (category: string) => {
     const newFlippedCards = {
@@ -141,26 +135,30 @@ export default function CardDeck({ reduceMotion }: CardDeckProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-60">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-lg text-muted-foreground">Loading your design challenge...</p>
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="text-center text-red-500">
-        Failed to load cards. Please try again later.
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center text-red-500 space-y-2">
+          <p className="text-lg font-medium">Failed to load cards</p>
+          <p className="text-sm">Please try again later</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <section className="mb-16">
-      <div className="flex flex-col items-center">
+    <section className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Conditional rendering of either cards or brief */}
         {showBrief ? (
-          <div className="w-full max-w-5xl">
+          <div className="w-full max-w-5xl mx-auto">
             <DesignBrief
               clientCard={selectedCards[CardCategory.CLIENT]}
               needCard={selectedCards[CardCategory.NEED]}
@@ -172,35 +170,44 @@ export default function CardDeck({ reduceMotion }: CardDeckProps) {
               onDrawAgain={() => {
                 setSelectedCards({});
                 setShowBrief(false);
-                // Immediately draw new cards
                 drawRandomCards();
               }}
             />
           </div>
         ) : (
-          /* Card display area */
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-4xl">
-            {Object.keys(CardCategory).map(categoryKey => {
-              const category = CardCategory[categoryKey as keyof typeof CardCategory];
-              const card = selectedCards[category];
-              
-              if (!card) return null;
-              
-              return (
-                <div className="flex justify-center aspect-square" key={`${category}-${card.id}`}>
-                  <Card
-                    id={card.id}
-                    category={card.category}
-                    promptText={card.promptText}
-                    backContent={card.backContent}
-                    isFlipped={flippedCards[category]}
-                    onFlip={() => flipCard(category)}
-                    onReroll={() => rerollCard(category)}
-                    reduceMotion={reduceMotion}
-                  />
-                </div>
-              );
-            })}
+          <div className="flex flex-col items-center">
+            {/* Cards Grid */}
+            <div className="grid grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {Object.keys(CardCategory).map(categoryKey => {
+                const category = CardCategory[categoryKey as keyof typeof CardCategory];
+                const card = selectedCards[category];
+                
+                if (!card) return null;
+                
+                return (
+                  <div 
+                    className="flex flex-col items-center space-y-2" 
+                    key={`${category}-${card.id}`}
+                  >
+                    <h3 className="text-sm font-medium text-center capitalize text-[#414141]">
+                      {category.toLowerCase()}
+                    </h3>
+                    <div className="w-full aspect-square max-w-[250px]">
+                      <Card
+                        id={card.id}
+                        category={card.category}
+                        promptText={card.promptText}
+                        backContent={card.backContent}
+                        isFlipped={flippedCards[category]}
+                        onFlip={() => flipCard(category)}
+                        onReroll={() => rerollCard(category)}
+                        reduceMotion={reduceMotion}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

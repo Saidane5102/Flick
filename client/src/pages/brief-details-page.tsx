@@ -31,78 +31,64 @@ export default function BriefDetailsPage() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
   const [briefDetails, setBriefDetails] = useState<BriefDetails | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionText, setSubmissionText] = useState("");
   const [submissionFile, setSubmissionFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentTimeLeft, setCurrentTimeLeft] = useState<number>(0);
 
+  // Load brief details from localStorage
   useEffect(() => {
-    console.group('BriefDetailsPage Initial Load');
-    console.log('Auth State:', { user, isLoading });
-    const briefId = location.split("/").pop();
-    console.log('Brief ID from URL:', briefId);
-
-    if (!briefId) {
-      console.log('No brief ID found, navigating to home');
-      navigate("/");
-      console.groupEnd();
-      return;
-    }
-
     const savedTimer = localStorage.getItem("activeTimer");
-    console.log('Saved Timer from localStorage:', savedTimer);
-
     if (savedTimer) {
       const timer = JSON.parse(savedTimer);
-      console.log('Parsed Timer Data:', timer);
-
-      if (timer.cardIds.join("-") === briefId) {
-        const briefWithUsers = {
-          ...timer,
-          invitedUsers: [
-            { id: "1", username: "John Doe", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John" },
-            { id: "2", username: "Jane Smith", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane" },
-            { id: "3", username: "Mike Johnson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" },
-          ]
-        };
-        console.log('Setting brief details:', briefWithUsers);
-        setBriefDetails(briefWithUsers);
-      } else {
-        console.log('Brief ID mismatch:', {
-          expected: briefId,
-          found: timer.cardIds.join("-")
-        });
-      }
-    } else {
-      console.log('No active timer found in localStorage');
+      const briefWithUsers = {
+        ...timer,
+        invitedUsers: [
+          { id: "1", username: "John Doe", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John" },
+          { id: "2", username: "Jane Smith", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jane" },
+          { id: "3", username: "Mike Johnson", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" },
+        ]
+      };
+      setBriefDetails(briefWithUsers);
+      setCurrentTimeLeft(timer.timeLeft);
     }
-    console.groupEnd();
-  }, [location, navigate, user, isLoading]);
+  }, []);
+
+  // Update timer every second
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (briefDetails && currentTimeLeft > 0) {
+      interval = setInterval(() => {
+        setCurrentTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            toast({
+              title: "Time's Up!",
+              description: "Your design challenge deadline has been reached.",
+            });
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [briefDetails, currentTimeLeft]);
 
   const handleCancelAcceptance = () => {
-    console.group('Canceling Brief Acceptance');
-    if (!briefDetails) {
-      console.error('No brief details available');
-      console.groupEnd();
-      return;
-    }
+    if (!briefDetails) return;
 
     const acceptedBriefs = JSON.parse(localStorage.getItem("acceptedBriefs") || "[]");
-    console.log('Current accepted briefs:', acceptedBriefs);
-
     const updatedBriefs = acceptedBriefs.filter((brief: any) => {
-      if (!brief.cardIds || !Array.isArray(brief.cardIds)) {
-        console.log('Invalid brief found:', brief);
-        return false;
-      }
+      if (!brief.cardIds || !Array.isArray(brief.cardIds)) return false;
       return brief.cardIds.join("-") !== briefDetails.cardIds.join("-");
     });
     
     localStorage.setItem("acceptedBriefs", JSON.stringify(updatedBriefs));
-    console.log('Updated accepted briefs:', updatedBriefs);
 
     const cards = JSON.parse(localStorage.getItem("cards") || "[]");
-    console.log('Current cards:', cards);
-
     const updatedCards = cards.map((card: any) => {
       if (briefDetails.cardIds.includes(card.id)) {
         return { ...card, opacity: 1 };
@@ -110,17 +96,13 @@ export default function BriefDetailsPage() {
       return card;
     });
     localStorage.setItem("cards", JSON.stringify(updatedCards));
-    console.log('Updated cards opacity:', updatedCards);
 
     const currentXP = parseInt(localStorage.getItem("userXP") || "0");
     const newXP = currentXP - 50;
     localStorage.setItem("userXP", newXP.toString());
-    console.log('Updated XP:', { currentXP, newXP });
 
     localStorage.removeItem("activeTimer");
-    console.log('Removed active timer from localStorage');
-
-    console.groupEnd();
+    
     toast({
       title: "Acceptance Cancelled",
       description: "50 XP points have been deducted for cancelling the brief acceptance.",
@@ -131,20 +113,11 @@ export default function BriefDetailsPage() {
   };
 
   const handleSubmitWork = async () => {
-    console.group('Submitting Work');
     setIsSubmitting(true);
     try {
-      console.log('Submission data:', {
-        text: submissionText,
-        file: submissionFile?.name,
-        fileType: submissionFile?.type,
-        fileSize: submissionFile?.size
-      });
-
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      console.log('Submission successful');
       toast({
         title: "Work Submitted",
         description: "Your design has been successfully submitted for review.",
@@ -154,7 +127,6 @@ export default function BriefDetailsPage() {
       setSubmissionFile(null);
       setIsSubmitting(false);
     } catch (error) {
-      console.error('Submission failed:', error);
       toast({
         title: "Submission Failed",
         description: "There was an error submitting your work. Please try again.",
@@ -162,7 +134,6 @@ export default function BriefDetailsPage() {
       });
       setIsSubmitting(false);
     }
-    console.groupEnd();
   };
 
   const formatTime = (seconds: number) => {
@@ -187,26 +158,18 @@ export default function BriefDetailsPage() {
     );
   }
 
-  // If no user is authenticated, show a message
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#FAF9F7] flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-4">Authentication Required</h1>
-          <p className="text-gray-600 mb-4">Please log in to view brief details.</p>
-          <Button onClick={() => navigate("/auth")}>Log In</Button>
-        </div>
-      </div>
-    );
-  }
-
   if (!briefDetails) {
     return (
       <div className="min-h-screen bg-[#FAF9F7] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-4">Brief Not Found</h1>
-          <p className="text-gray-600 mb-4">This brief may have expired or been deleted.</p>
-          <Button onClick={() => navigate("/")}>Return Home</Button>
+          <h2 className="text-2xl font-bold text-[#212121] mb-4">No Active Challenge</h2>
+          <p className="text-[#414141] mb-6">You don't have any active design challenge.</p>
+          <Button
+            onClick={() => navigate("/")}
+            className="bg-[#212121] hover:bg-black text-white"
+          >
+            Start a New Challenge
+          </Button>
         </div>
       </div>
     );
@@ -228,7 +191,7 @@ export default function BriefDetailsPage() {
             <div className="bg-[#1A1A1A] rounded-2xl px-6 py-4 text-center">
               <div className="text-sm text-[#E9E6DD] mb-1">Time Remaining</div>
               <div className="text-2xl font-bold text-white">
-                {formatTime(briefDetails.timeLeft)}
+                {formatTime(currentTimeLeft)}
               </div>
             </div>
           </div>
@@ -286,7 +249,7 @@ export default function BriefDetailsPage() {
                 </CardContent>
               </Card>
 
-              {/* Submit Work Card */}
+              {/* Submission Form */}
               <Card className="bg-white border-[#E9E6DD] rounded-[20px] shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-xl font-semibold text-[#212121]">Submit Your Work</CardTitle>
@@ -297,35 +260,49 @@ export default function BriefDetailsPage() {
                       <Label htmlFor="description">Description</Label>
                       <Textarea
                         id="description"
-                        placeholder="Describe your design approach and solution..."
                         value={submissionText}
-                        onChange={(e) => setSubmissionText(e.target.value)}
-                        className="min-h-[100px]"
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSubmissionText(e.target.value)}
+                        placeholder="Describe your design solution..."
+                        className="min-h-[120px]"
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="file">Upload Design Files</Label>
-                      <Input
-                        id="file"
-                        type="file"
-                        accept="image/*,.pdf,.psd,.ai"
-                        onChange={(e) => setSubmissionFile(e.target.files?.[0] || null)}
-                      />
+                      <Label htmlFor="file">Upload Design</Label>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          id="file"
+                          type="file"
+                          accept="image/*"
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubmissionFile(e.target.files?.[0] || null)}
+                          className="flex-1"
+                        />
+                        {submissionFile && (
+                          <Button
+                            variant="outline"
+                            onClick={() => setSubmissionFile(null)}
+                            className="text-red-600"
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
+
                   <Button
                     onClick={handleSubmitWork}
-                    disabled={isSubmitting || (!submissionText && !submissionFile)}
+                    disabled={isSubmitting || !submissionText || !submissionFile}
                     className="w-full bg-[#212121] hover:bg-black text-white"
                   >
                     {isSubmitting ? (
                       <>
-                        <CheckCircle className="mr-2 h-4 w-4 animate-spin" />
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                         Submitting...
                       </>
                     ) : (
                       <>
-                        <Upload className="mr-2 h-4 w-4" />
+                        <Send className="mr-2 h-4 w-4" />
                         Submit Work
                       </>
                     )}
@@ -336,27 +313,31 @@ export default function BriefDetailsPage() {
 
             {/* Sidebar */}
             <div className="space-y-8">
-              {/* Invited Participants */}
+              {/* Team Members */}
               <Card className="bg-white border-[#E9E6DD] rounded-[20px] shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-xl font-semibold text-[#212121]">Invited Participants</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-[#212121]">Team Members</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {briefDetails.invitedUsers?.map((participant) => (
-                      <div key={participant.id} className="flex items-center gap-3">
-                        <img
-                          src={participant.avatar}
-                          alt={participant.username}
-                          className="w-10 h-10 rounded-full"
-                        />
-                        <div>
-                          <div className="font-medium text-[#212121]">{participant.username}</div>
-                          <div className="text-sm text-[#414141]">Designer</div>
-                        </div>
+                <CardContent className="space-y-4">
+                  {briefDetails.invitedUsers?.map((user) => (
+                    <div key={user.id} className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#E9E6DD] flex items-center justify-center">
+                        {user.avatar ? (
+                          <img
+                            src={user.avatar}
+                            alt={user.username}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : (
+                          <User className="h-5 w-5 text-[#414141]" />
+                        )}
                       </div>
-                    ))}
-                  </div>
+                      <div>
+                        <div className="font-medium text-[#212121]">{user.username}</div>
+                        <div className="text-sm text-[#414141]">Designer</div>
+                      </div>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
 
