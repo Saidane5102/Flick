@@ -158,64 +158,50 @@ export default function CardDeck({ reduceMotion }: CardDeckProps) {
   return (
     <section className="mb-16">
       <div className="flex flex-col items-center">
-        {/* Card drawing controls */}
-        <div className="mb-8 flex flex-col sm:flex-row items-center gap-4">
-          <Button
-            onClick={drawRandomCards}
-            className="bg-[#212121] hover:bg-black text-white font-medium py-2.5 px-6 rounded-[8px] shadow-sm transition-colors flex items-center"
-          >
-            <Shuffle className="h-4 w-4 mr-2" strokeWidth={1.5} />
-            Draw Cards
-          </Button>
-          
-          {rerollVisible && (
-            <Button
-              onClick={rerollAll}
-              variant="outline"
-              className="border-[#E9E6DD] bg-transparent text-[#212121] hover:bg-[#E9E6DD] rounded-[8px] font-medium py-2.5 px-6 transition-colors flex items-center"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" strokeWidth={1.5} />
-              Reroll All
-            </Button>
-          )}
-        </div>
-
-        {/* Card display area */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl">
-          {Object.keys(CardCategory).map(categoryKey => {
-            const category = CardCategory[categoryKey as keyof typeof CardCategory];
-            const card = selectedCards[category];
-            
-            if (!card) return null;
-            
-            return (
-              <div className="flex justify-center" key={`${category}-${card.id}`}>
-                <Card
-                  id={card.id}
-                  category={card.category}
-                  promptText={card.promptText}
-                  backContent={card.backContent}
-                  isFlipped={flippedCards[category]}
-                  onFlip={() => flipCard(category)}
-                  onReroll={() => rerollCard(category)}
-                  reduceMotion={reduceMotion}
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Design Brief */}
-        {showBrief && (
-          <DesignBrief
-            clientCard={selectedCards[CardCategory.CLIENT]}
-            needCard={selectedCards[CardCategory.NEED]}
-            challengeCard={selectedCards[CardCategory.CHALLENGE]}
-            audienceCard={selectedCards[CardCategory.AUDIENCE]}
-            cardIds={Object.values(selectedCards)
-              .filter((card): card is CardType => card !== null)
-              .map(card => card.id)}
-          />
+        {/* Conditional rendering of either cards or brief */}
+        {showBrief ? (
+          <div className="w-full max-w-5xl">
+            <DesignBrief
+              clientCard={selectedCards[CardCategory.CLIENT]}
+              needCard={selectedCards[CardCategory.NEED]}
+              challengeCard={selectedCards[CardCategory.CHALLENGE]}
+              audienceCard={selectedCards[CardCategory.AUDIENCE]}
+              cardIds={Object.values(selectedCards)
+                .filter((card): card is CardType => card !== null)
+                .map(card => card.id)}
+              onDrawAgain={() => {
+                setSelectedCards({});
+                setShowBrief(false);
+                // Immediately draw new cards
+                drawRandomCards();
+              }}
+            />
+          </div>
+        ) : (
+          /* Card display area */
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-4xl">
+            {Object.keys(CardCategory).map(categoryKey => {
+              const category = CardCategory[categoryKey as keyof typeof CardCategory];
+              const card = selectedCards[category];
+              
+              if (!card) return null;
+              
+              return (
+                <div className="flex justify-center aspect-square" key={`${category}-${card.id}`}>
+                  <Card
+                    id={card.id}
+                    category={card.category}
+                    promptText={card.promptText}
+                    backContent={card.backContent}
+                    isFlipped={flippedCards[category]}
+                    onFlip={() => flipCard(category)}
+                    onReroll={() => rerollCard(category)}
+                    reduceMotion={reduceMotion}
+                  />
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </section>

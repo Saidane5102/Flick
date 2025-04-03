@@ -215,20 +215,24 @@ export default function CardForm({ card, onClose }: CardFormProps) {
           )}
         />
         
-        <div className="flex justify-end gap-2 pt-4">
+        <div className="flex justify-end gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => onClose()}
-            disabled={isPending}
+            className="border-gray-200"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? (
+          <Button
+            type="submit"
+            disabled={createMutation.isPending}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {createMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {card ? "Updating..." : "Creating..."}
+                Saving...
               </>
             ) : (
               <>

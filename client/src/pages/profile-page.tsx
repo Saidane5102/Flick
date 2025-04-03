@@ -25,6 +25,11 @@ interface SavedBrief {
   text: string;
   cardIds: number[];
   timestamp: string;
+  isAccepted: boolean;
+  client: string;
+  need: string;
+  challenge: string;
+  audience: string;
 }
 
 export default function ProfilePage() {
@@ -72,7 +77,9 @@ export default function ProfilePage() {
       try {
         const briefs = localStorage.getItem('savedBriefs');
         if (briefs) {
-          setSavedBriefs(JSON.parse(briefs));
+          const allBriefs = JSON.parse(briefs);
+          // Only show accepted briefs
+          setSavedBriefs(allBriefs.filter((brief: SavedBrief) => brief.isAccepted));
         }
       } catch (error) {
         console.error("Error loading saved briefs:", error);
@@ -188,7 +195,7 @@ export default function ProfilePage() {
                 value="briefs" 
                 className="rounded-md data-[state=active]:bg-white data-[state=active]:text-[#212121] text-[#414141]"
               >
-                Saved Briefs
+                Accepted Briefs
               </TabsTrigger>
             </TabsList>
             
@@ -260,81 +267,82 @@ export default function ProfilePage() {
             </TabsContent>
             
             {/* Saved Briefs tab */}
-            <TabsContent value="briefs">
-              <h2 className="text-xl font-semibold mb-4">My Saved Briefs</h2>
+            <TabsContent value="briefs" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Accepted Briefs</h3>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/")}
+                  className="text-sm"
+                >
+                  Create New Brief
+                </Button>
+              </div>
               
-              {savedBriefs.length > 0 ? (
-                <div className="space-y-4">
+              {savedBriefs.length === 0 ? (
+                <div className="text-center py-12">
+                  <Folder className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">No Accepted Briefs Yet</h4>
+                  <p className="text-gray-600 mb-6">
+                    Start by creating a new design brief and accepting it to begin your challenge.
+                  </p>
+                  <Button onClick={() => navigate("/")}>Create Your First Brief</Button>
+                </div>
+              ) : (
+                <div className="grid gap-4">
                   {savedBriefs.map((brief, index) => (
-                    <div key={index} className="bg-white border border-[#E9E6DD] rounded-[16px] p-5 hover:shadow-sm transition-shadow">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-[#FAF9F7] border border-[#E9E6DD] rounded-[8px] flex items-center justify-center mr-3">
-                            <Folder className="h-5 w-5 text-[#212121]" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Design Brief</h3>
-                            <div className="flex items-center text-[#414141] text-xs">
-                              <Clock className="h-3 w-3 mr-1" />
-                              <span>
-                                {new Date(brief.timestamp).toLocaleDateString('en-US', { 
-                                  year: 'numeric', 
-                                  month: 'short', 
-                                  day: 'numeric' 
-                                })}
-                              </span>
+                    <div key={index} className="memo-card p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Design Challenge</h4>
+                          <p className="text-sm text-gray-600 mb-4">{brief.text}</p>
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-500">Client:</span>
+                              <span className="ml-2 text-gray-900">{brief.client}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Need:</span>
+                              <span className="ml-2 text-gray-900">{brief.need}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Challenge:</span>
+                              <span className="ml-2 text-gray-900">{brief.challenge}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Audience:</span>
+                              <span className="ml-2 text-gray-900">{brief.audience}</span>
                             </div>
                           </div>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 text-xs"
-                          onClick={() => {
-                            // Navigate to home page with this brief
-                            // In a real implementation, you would set this brief in some state manager
-                            // and restore it on the home page
-                            navigate("/");
-                          }}
-                        >
-                          Use Brief
-                          <ChevronRight className="h-3.5 w-3.5 ml-1" />
-                        </Button>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-500 mb-1">
+                            Accepted on
+                          </div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {new Date(brief.timestamp).toLocaleDateString()}
+                          </div>
+                        </div>
                       </div>
-                      
-                      <p className="text-[#414141] text-sm border-l-2 border-[#E9E6DD] pl-3 py-1">
-                        {brief.text}
-                      </p>
-                      
-                      <div className="flex justify-end mt-3">
+                      <div className="flex justify-end gap-2">
                         <Button
-                          onClick={() => navigate("/")}
                           variant="outline"
                           size="sm"
-                          className="h-8 text-xs border-[#E9E6DD] text-[#212121] hover:bg-[#FAF9F7]"
+                          className="text-gray-600"
                         >
-                          <Upload className="h-3.5 w-3.5 mr-1.5" />
-                          Start Design
+                          View Details
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          Delete
                         </Button>
                       </div>
                     </div>
                   ))}
-                </div>
-              ) : (
-                <div className="bg-[#FAF9F7] border border-dashed border-[#E9E6DD] rounded-[16px] p-8 text-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                    <PenLine className="h-6 w-6 text-[#414141]" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">No saved briefs</h3>
-                  <p className="text-[#414141] text-sm mb-4 max-w-md mx-auto">
-                    You haven't saved any design briefs yet. Generate a brief and save it for later!
-                  </p>
-                  <Button 
-                    onClick={() => navigate("/")}
-                    className="bg-[#212121] hover:bg-black text-white"
-                  >
-                    Create a Brief
-                  </Button>
                 </div>
               )}
             </TabsContent>

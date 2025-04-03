@@ -6,9 +6,10 @@ import Footer from "@/components/Footer";
 import CardManager from "@/components/admin/CardManager";
 import UserManager from "@/components/admin/UserManager";
 import DesignManager from "@/components/admin/DesignManager";
+import BadgeManager from "@/components/admin/BadgeManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings, Database, Users, FileText, LayoutDashboard, Palette } from "lucide-react";
+import { Settings, Database, Users, FileText, LayoutDashboard, Palette, Award } from "lucide-react";
 
 export default function AdminPage() {
   const { user, isLoading } = useAuth();
@@ -46,47 +47,45 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent className="p-6">
             <Tabs defaultValue="cards" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-4 mb-8 p-1 bg-gray-50 border rounded-lg">
+              <TabsList className="grid grid-cols-5 mb-8 p-1 bg-gray-50 border rounded-lg">
                 <TabsTrigger value="cards" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <Database className="h-4 w-4 mr-2" />
+                  <FileText className="h-4 w-4 mr-2" />
                   Cards
+                </TabsTrigger>
+                <TabsTrigger value="badges" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <Award className="h-4 w-4 mr-2" />
+                  Badges
+                </TabsTrigger>
+                <TabsTrigger value="designs" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <Palette className="h-4 w-4 mr-2" />
+                  Designs
                 </TabsTrigger>
                 <TabsTrigger value="users" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
                   <Users className="h-4 w-4 mr-2" />
                   Users
                 </TabsTrigger>
-                <TabsTrigger value="designs" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Designs
-                </TabsTrigger>
-                <TabsTrigger value="design-system" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
-                  <Palette className="h-4 w-4 mr-2" />
-                  Design System
+                <TabsTrigger value="settings" className="flex items-center data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
                 </TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="cards" className="mt-0">
+
+              <TabsContent value="cards">
                 <CardManager />
               </TabsContent>
-              
-              <TabsContent value="users" className="mt-0">
+              <TabsContent value="badges">
+                <BadgeManager />
+              </TabsContent>
+              <TabsContent value="designs">
+                <DesignManager />
+              </TabsContent>
+              <TabsContent value="users">
                 <UserManager />
               </TabsContent>
-              
-              <TabsContent value="designs" className="mt-0">
-                <div className="p-8 text-center border border-dashed rounded-lg bg-gray-50/50">
-                  <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
-                    <FileText className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2 text-gray-800">Design Management</h3>
-                  <p className="text-gray-500 max-w-md mx-auto">
-                    The design management interface allowing you to review, approve, and provide feedback on user submissions will be implemented in the next update.
-                  </p>
+              <TabsContent value="settings">
+                <div className="text-center py-8 text-gray-500">
+                  Settings page coming soon...
                 </div>
-              </TabsContent>
-              
-              <TabsContent value="design-system" className="mt-0">
-                <DesignManager />
               </TabsContent>
             </Tabs>
           </CardContent>

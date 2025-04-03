@@ -148,45 +148,25 @@ export default function CardManager() {
   return (
     <div className="space-y-4">
       {/* Filters and Controls */}
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start mb-6">
-        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          <div className="relative flex-1">
-            <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold">Card Management</h2>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search cards..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
+              className="pl-10 w-64"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-400" />
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value={CardCategory.CLIENT}>{CardCategory.CLIENT}</SelectItem>
-                <SelectItem value={CardCategory.NEED}>{CardCategory.NEED}</SelectItem>
-                <SelectItem value={CardCategory.CHALLENGE}>{CardCategory.CHALLENGE}</SelectItem>
-                <SelectItem value={CardCategory.AUDIENCE}>{CardCategory.AUDIENCE}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
-        
-        <div className="flex gap-2 w-full md:w-auto justify-between sm:justify-end">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/cards"] })}
-            className="flex items-center"
-          >
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/cards"] })}>
             <RefreshCcw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
-          <Button size="sm" onClick={handleNew} className="flex items-center">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleNew}>
             <Plus className="h-4 w-4 mr-2" />
             Add Card
           </Button>
@@ -257,8 +237,9 @@ export default function CardManager() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDeleteConfirm(card)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
                         >
-                          <Trash2 className="h-4 w-4 text-red-500" />
+                          <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
                         </Button>
                       </div>

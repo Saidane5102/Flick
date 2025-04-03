@@ -10,6 +10,7 @@ import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/admin-page";
 import LandingPage from "@/pages/landing-page";
 import ProfilePage from "@/pages/profile-page";
+import BriefDetailsPage from "@/pages/brief-details-page";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
 
@@ -37,6 +38,7 @@ function Router() {
         <Route path="/landing" component={LandingPage} />
         <ProtectedRoute path="/" component={HomePage} />
         <ProtectedRoute path="/profile" component={ProfilePage} />
+        <ProtectedRoute path="/brief/:id" component={BriefDetailsPage} />
         <Route path="/auth" component={AuthPage} />
         <AdminRoute path="/admin" component={AdminPage} />
         {/* Fallback to 404 */}

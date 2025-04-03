@@ -140,27 +140,29 @@ export default function UserManager() {
   return (
     <div className="space-y-4">
       {/* Search and controls */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div className="flex w-full max-w-sm items-center space-x-2">
-          <div className="flex items-center border rounded-lg bg-gray-50 px-3">
-            <Search className="h-4 w-4 text-gray-400 mr-2" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold">User Management</h2>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
             <Input
               placeholder="Search users..."
-              className="apple-input border-0 bg-transparent focus:ring-0 focus:bg-transparent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 w-64"
             />
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] })}
-          className="flex items-center apple-button bg-gray-50 hover:bg-gray-100 border-0"
-        >
-          <RefreshCcw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] })}>
+            <RefreshCcw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => window.location.href = "/register"}>
+            <UserIcon className="h-4 w-4 mr-2" />
+            Add User
+          </Button>
+        </div>
       </div>
 
       {/* Users table */}
@@ -218,7 +220,7 @@ export default function UserManager() {
                       variant="destructive"
                       size="sm"
                       onClick={() => handleDeleteConfirm(user)}
-                      className="text-xs h-8"
+                      className="text-xs h-8 bg-red-500 hover:bg-red-600 text-white"
                     >
                       Delete
                     </Button>
